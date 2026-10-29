@@ -1,4 +1,6 @@
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 export default {
+  ...sharedPlanStrings('zh-TW'),
   'Confirm': '確認',
   'Cancel': '取消',
   'Press back again to exit': '再按一次返回以退出',

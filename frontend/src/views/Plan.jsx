@@ -28,6 +28,7 @@ import {
   scheduleModeOf, queueRecovery, rotationIds, saveRotation, startNewPass, startPass, stopPass,
   chooseRotation, chooseFixedWeek, sequenceOf, isSimpleSequence, segmentAt, REST,
 } from '../lib/rotation.js'
+import { openSharePlanSheet } from '../components/SharedPlans.jsx'
 
 // Plan has two views (v1.3.11): Schedule (how you train, and when) and Routines (what you
 // train). The last one you looked at comes back: a per-device convenience, never synced, so it
@@ -156,6 +157,8 @@ export default function Plan() {
       title: t('Plan'),
       subtitle: has ? null : t('Add an exercise to a routine first. An empty plan has nothing to share.'),
       items: [
+        user && { icon: 'globe', label: t('Share with this server'), sub: t('Let other profiles here browse and fork a snapshot of your plan.'), disabled: !has, onClick: openSharePlanSheet },
+        user && { icon: 'grid', label: t('Browse shared plans'), sub: t('Templates and plans shared by people on this server'), onClick: () => nav('/plans') },
         { icon: 'share', label: t('Export plan file'), sub: t('A small file a friend can import into their own openGym. Routines only, none of your workouts or weigh-ins.'), disabled: !has, onClick: exportPlanFile },
         { icon: 'note', label: t('Print / Save as PDF'), disabled: !has, onClick: printWholePlan },
         { icon: 'download', label: t('Import a plan file'), onClick: () => fileRef.current?.click() },

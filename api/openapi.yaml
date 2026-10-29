@@ -2314,6 +2314,166 @@ paths:
               schema: { $ref: '#/components/schemas/Ok' }
         '401': { $ref: '#/components/responses/Unauthorized' }
 
+  /api/shared-plans:
+    get:
+      tags: [data]
+      operationId: listSharedPlans
+      summary: Plans people chose to show on this instance
+      description: |
+        Instance-private gallery metadata. The response never includes workouts, body weight,
+        settings or the plan bundle itself. Disabled/deleted owners disappear with their plans.
+        Requires a signed-in profile; guest mode has no access to the gallery.
+      responses:
+        '200':
+          description: Visible shared plans, templates first and then grouped by owner.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plans:
+                    type: array
+                    items: { $ref: '#/components/schemas/SharedPlan' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /api/shared-plan:
+    get:
+      tags: [data]
+      operationId: getSharedPlan
+      summary: One shared plan and its forkable bundle
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Metadata plus the sanitized openGym plan-file bundle.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan: { $ref: '#/components/schemas/SharedPlanDetail' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404':
+          description: No visible shared plan with that id.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/shared-plans/publish:
+    post:
+      tags: [data]
+      operationId: publishSharedPlan
+      summary: Publish a plan snapshot to this instance
+      description: |
+        Explicit opt-in. Accepts the existing openGym plan-file format and stores a sanitized
+        snapshot containing routines, schedule and referenced custom exercises only. A profile
+        may keep up to 12 snapshots; each is at most 512 KiB, 20 routines and 240 exercises.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, bundle]
+              properties:
+                title: { type: string, maxLength: 60 }
+                summary: { type: string, maxLength: 1000 }
+                bundle: { $ref: '#/components/schemas/PlanBundle' }
+      responses:
+        '201':
+          description: Snapshot published.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan: { $ref: '#/components/schemas/SharedPlan' }
+        '400':
+          description: The plan is empty, malformed, oversized or unnamed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409':
+          description: This profile already has 12 shared snapshots.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/shared-plans/update:
+    post:
+      tags: [data]
+      operationId: updateSharedPlan
+      summary: Edit a shared plan's title, explanation or template status
+      description: |
+        The owner can edit title and explanation. An admin may edit any shared plan and is the
+        only role allowed to set or clear `template`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: string, format: uuid }
+                title: { type: string, maxLength: 60 }
+                summary: { type: string, maxLength: 1000 }
+                template: { type: boolean }
+      responses:
+        '200':
+          description: Metadata updated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  plan: { $ref: '#/components/schemas/SharedPlan' }
+        '400':
+          description: The new title is empty.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: No visible shared plan with that id.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /api/shared-plans/delete:
+    post:
+      tags: [data]
+      operationId: deleteSharedPlan
+      summary: Stop sharing a plan snapshot
+      description: The owner or an admin can remove it. The owner's private plan is untouched.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id: { type: string, format: uuid }
+      responses:
+        '200':
+          description: Snapshot removed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Ok' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404':
+          description: No shared plan with that id.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
   /api/admin/users:
     get:
       tags: [admin]
@@ -3454,6 +3614,58 @@ components:
         retryAfter:
           type: integer
           description: 429 only. The same number of seconds as the Retry-After header.
+
+    PlanBundle:
+      type: object
+      description: >-
+        The existing openGym plan-file format: routines, weekly schedule and referenced custom
+        exercises only. Shared-plan publishing sanitizes it again before storage.
+      required: [opengym_plan, routines]
+      properties:
+        opengym_plan: { type: integer, const: 1 }
+        exported: { type: string, format: date }
+        name: { type: string }
+        unit: { type: string, enum: [kg, lb] }
+        week:
+          type: object
+          additionalProperties:
+            type: array
+            items: { type: string }
+        routines:
+          type: array
+          items: { $ref: '#/components/schemas/Routine' }
+        customEx:
+          type: array
+          items: { $ref: '#/components/schemas/CustomExercise' }
+      additionalProperties: false
+
+    SharedPlan:
+      type: object
+      required: [id, title, summary, owner, template, routineCount, exerciseCount, scheduledDays]
+      properties:
+        id: { type: string, format: uuid }
+        title: { type: string }
+        summary: { type: string }
+        owner:
+          type: object
+          required: [id, name]
+          properties:
+            id: { type: string }
+            name: { type: string }
+        template: { type: boolean }
+        created: { type: string, format: date-time }
+        updated: { type: string, format: date-time }
+        routineCount: { type: integer }
+        exerciseCount: { type: integer }
+        scheduledDays: { type: integer }
+
+    SharedPlanDetail:
+      allOf:
+        - $ref: '#/components/schemas/SharedPlan'
+        - type: object
+          required: [bundle]
+          properties:
+            bundle: { $ref: '#/components/schemas/PlanBundle' }
 
     Ok:
       type: object

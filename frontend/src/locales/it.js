@@ -1,5 +1,7 @@
 // Italian UI strings. Keys are the English source strings (see lib/i18n.js).
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 export default {
+  ...sharedPlanStrings('it'),
   'Confirm': 'Conferma',
   'Cancel': 'Annulla',
   'Press back again to exit': 'Premi di nuovo indietro per uscire',

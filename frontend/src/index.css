@@ -2161,6 +2161,58 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .ci-dots{display:flex;justify-content:center;gap:7px;margin-top:4px}
 .ci-dot{width:7px;height:7px;border-radius:50%;background:var(--surface-3);transition:background var(--fast),transform var(--fast)}
 .ci-dot.on{background:var(--acc);transform:scale(1.15)}
+
+/* ------------------------------------------------------- shared plans -- */
+/* Home shows one rail per person only when the current profile has no routines. Scrolling the
+   page changes people; scrolling a rail changes that person's published plan snapshots. */
+.shared-gallery{padding:16px 0;overflow:hidden}
+.shared-gallery-head{align-items:flex-start;padding:0 16px 12px;gap:8px}
+.shared-gallery-head>div:first-child{min-width:0}
+.shared-gallery-head h2{margin:0 0 3px}
+.shared-gallery-head .btn{flex:none}
+.shared-groups{display:flex;flex-direction:column;gap:16px}
+.shared-gallery>.shared-groups>.shared-owner{padding:0 16px}
+.shared-owner-head{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;margin:0 2px 7px}
+.shared-avatar{width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface-2);color:var(--label-2);font-size:13px}
+.shared-owner:first-child .shared-avatar{background:var(--acc-soft);color:var(--acc)}
+.shared-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 7px;scroll-padding-inline:2px}
+.shared-rail::-webkit-scrollbar{display:none}
+.shared-plan-card{scroll-snap-align:start;flex:0 0 min(82%,290px);min-height:126px;display:flex;flex-direction:column;
+  border-radius:var(--r-card);background:var(--surface-2);padding:13px;text-align:start;color:var(--label);border:var(--hair) solid var(--sep-op)}
+.shared-plan-card:active{transform:scale(.985);background:var(--surface-3)}
+.shared-plan-title{font-size:16px;font-weight:600;line-height:1.25;letter-spacing:-.009em;overflow-wrap:anywhere;padding-inline-end:4px}
+.shared-plan-summary{font-size:13px;color:var(--label-2);line-height:1.38;margin-top:7px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.shared-plan-meta{font-size:12px;color:var(--label-2);margin-top:auto;padding-top:10px}
+.shared-plan-owner{font-size:11px;color:var(--label-3);margin-top:3px}
+.shared-plan-card .tag{flex:none;text-transform:none}
+.shared-plan-card .tag .icn{font-size:11px}
+.shared-empty{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;color:var(--label-2);font-size:14px;padding:16px}
+.shared-empty>.icn{font-size:21px}
+.shared-library .shared-plan-card{background:var(--surface);flex-basis:min(84%,310px)}
+.shared-library .shared-owner{margin-bottom:4px}
+.shared-detail-hero{padding:18px}
+.card h2.shared-detail-title{font-size:26px;line-height:1.1;font-weight:650;letter-spacing:-.023em;color:var(--label);margin:5px 0 4px;text-transform:none}
+.shared-template-tag{text-transform:none;margin-bottom:2px}.shared-template-tag .icn{font-size:11px}
+.shared-detail-summary{font-size:15px;line-height:1.5;color:var(--label-2);margin:15px 0}
+.shared-detail-stats{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0}
+.shared-detail-stats span{font-size:12px;color:var(--label-2);background:var(--surface-2);border-radius:7px;padding:5px 8px}
+.shared-detail-hero>.btn{width:100%;margin-top:5px}
+.shared-schedule .sect-b{padding:4px 13px}
+.shared-schedule-row{display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:var(--hair) solid var(--sep)}
+.shared-schedule-row:last-child{border-bottom:0}.shared-schedule-row span{color:var(--label-2);font-size:13px}.shared-schedule-row b{font-size:13px;text-align:end}
+.shared-routines{display:flex;flex-direction:column;gap:12px}
+.shared-routine{margin:0}.shared-routine>.row{padding-bottom:10px}
+.shared-exercises{border-top:var(--hair) solid var(--sep)}
+.shared-exercise{display:flex;align-items:flex-start;gap:9px;padding:10px 0;border-bottom:var(--hair) solid var(--sep);font-size:14px}
+.shared-exercise:last-child{border-bottom:0;padding-bottom:0}.shared-exercise>.muted{flex:none;text-align:end;max-width:42%}
+.shared-ex-num{flex:none;width:21px;height:21px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center;color:var(--label-2);font-size:11px}
+.shared-stop{margin:18px 0;color:var(--red)}
+.shared-sheet-copy{line-height:1.45;margin:-2px 0 14px}
+.field-label{display:block;color:var(--label-2);font-size:13px;margin:12px 2px 6px}
+.field-label+.field{margin-bottom:2px}
+.shared-template-switch{margin:15px 0;padding:12px;background:var(--surface-2);border-radius:var(--r-card)}
+.shared-template-switch>div:first-child{min-width:0}.shared-template-switch .sw{flex:none}
 /* browser camera sheet (components/CameraScan.jsx): the video fills a portrait plate, a dashed
    square in the middle says "put the code here" — decoding reads the whole frame regardless. */
 .cam-wrap{position:relative;width:100%;aspect-ratio:3/4;max-height:58vh;border-radius:var(--r-lg);overflow:hidden;background:#000}

@@ -1,5 +1,7 @@
 // Spanish UI strings. Keys are the English source strings (see lib/i18n.js).
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 export default {
+  ...sharedPlanStrings('es'),
   'Confirm': 'Confirmar',
   'Cancel': 'Cancelar',
   'Press back again to exit': 'Pulsa atrás otra vez para salir',

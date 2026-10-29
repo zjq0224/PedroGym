@@ -1,5 +1,7 @@
 // Turkish UI strings. Keys are the English source strings (see lib/i18n.js).
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 export default {
+  ...sharedPlanStrings('tr'),
   'Confirm': 'Onayla',
   'Cancel': 'İptal',
   'Press back again to exit': 'Çıkmak için geri tuşuna tekrar basın',

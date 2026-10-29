@@ -148,6 +148,12 @@ db.users = db.users || [];
 db.creds = db.creds || [];
 db.subs = db.subs || [];
 db.invites = db.invites || [];
+// Plans people explicitly chose to show to the rest of this instance. These are snapshots of
+// the app's existing share-file format, never references to a live state file: later edits stay
+// private until the owner publishes another snapshot, and workouts/body weight cannot leak in.
+db.sharedPlans = Array.isArray(db.sharedPlans)
+  ? db.sharedPlans.filter(x => x && typeof x === 'object' && !Array.isArray(x))
+  : [];
 db.deviceLinks = db.deviceLinks || [];   // unused one-time device links, hashed (device-link.js)
 const isAdmin = user => !!user && (user.admin === true || ADMIN_UIDS.includes(user.id));
 // One owner per instance, any number of admins. Admins run the place day to day (users, invites,
@@ -226,6 +232,121 @@ function forClient(S) {
 // there is the honest reading of such a file — what was dropped carried nothing to show.
 const record = x => !!x && typeof x === 'object' && !Array.isArray(x);
 const records = v => (Array.isArray(v) ? v.filter(record) : []);
+
+/* ---------- shared plan library ---------- */
+// Kept deliberately smaller than the 5 MiB profile document. A shared plan is rendered on other
+// people's phones and copied into their state, so a single publisher must not be able to turn the
+// gallery into a multi-megabyte response. The ordinary UI stays far below all of these limits.
+const MAX_SHARED_PLANS = 12;
+const MAX_SHARED_PLAN_BYTES = 512 * 1024;
+const MAX_SHARED_ROUTINES = 20;
+const MAX_SHARED_EXERCISES = 240;
+const SHARED_TITLE_MAX = 60;
+const SHARED_SUMMARY_MAX = 1000;
+
+const own = (o, keys) => Object.fromEntries(keys.filter(k => Object.hasOwn(o, k)).map(k => [k, o[k]]));
+const jsonCopy = value => JSON.parse(JSON.stringify(value));
+const sharedText = (v, max) => text(v).trim().slice(0, max);
+
+// Only fields the plan-file reader understands cross the public boundary. In particular, an
+// invented `workouts`, `bodyweight`, media reference or profile field is dropped even if a caller
+// bypasses buildPlanBundle in the app and talks to this route directly.
+const SHARED_EX_FIELDS = [
+  'id', 'sets', 'mode', 'min', 'speed', 'incline', 'sec', 'weight', 'reps',
+  'pyramid', 'pyramidRest', 'pyramidWeight', 'bodyweight', 'side', 'prog', 'inc',
+  'backoff', 'lastToFailure', 'deloadFactor', 'dbLoad', 'repsMin', 'setsMax',
+  'repsMax', 'restSec', 'restOff', 'warmupRestSec', 'warmupRestOff', 'sideRestOff',
+  'sideRestSec', 'sg', 'sgName', 'sgRest', 'note', 'warmupSets', 'intensifier', 'subs'
+];
+const SHARED_CUSTOM_FIELDS = [
+  'id', 'n', 'bp', 'aliases', 'desc', 'url', 'eq', 'tg', 'primaries', 'secondaries', 'muscleGroups'
+];
+
+function cleanSharedBundle(raw) {
+  if (!record(raw) || raw.opengym_plan !== 1 || !Array.isArray(raw.routines)) return null;
+  let size = Infinity;
+  try { size = Buffer.byteLength(JSON.stringify(raw)); } catch { return null; }
+  if (size > MAX_SHARED_PLAN_BYTES) return null;
+  const routines = [];
+  let exerciseCount = 0;
+  for (const source of raw.routines) {
+    if (!record(source) || !Array.isArray(source.ex) || routines.length >= MAX_SHARED_ROUTINES) return null;
+    const id = sharedText(source.id, 100);
+    if (!id) return null;
+    const ex = [];
+    for (const item of source.ex) {
+      if (!record(item) || !sharedText(item.id, 100)) return null;
+      exerciseCount++;
+      if (exerciseCount > MAX_SHARED_EXERCISES) return null;
+      const clean = own(item, SHARED_EX_FIELDS);
+      clean.id = sharedText(item.id, 100);
+      ex.push(jsonCopy(clean));
+    }
+    routines.push({
+      id,
+      name: sharedText(source.name, 100),
+      ...(source.emoji != null ? { emoji: sharedText(source.emoji, 40) } : {}),
+      ...(source.prog ? { prog: sharedText(source.prog, 40) } : {}),
+      ...(source.excludeFromProgression === true ? { excludeFromProgression: true } : {}),
+      ex,
+    });
+  }
+  if (!routines.length || !exerciseCount) return null;
+  const ids = new Set(routines.map(r => r.id));
+  const week = {};
+  if (record(raw.week)) {
+    for (let d = 0; d < 7; d++) {
+      const value = raw.week[d];
+      const scheduled = (Array.isArray(value) ? value : value == null ? [] : [value])
+        .map(v => sharedText(v, 100)).filter(id => ids.has(id));
+      if (scheduled.length) week[d] = scheduled;
+    }
+  }
+  const customEx = records(raw.customEx).slice(0, MAX_SHARED_EXERCISES).map(c => {
+    const clean = own(c, SHARED_CUSTOM_FIELDS);
+    clean.id = sharedText(c.id, 100);
+    clean.n = sharedText(c.n, 100);
+    if ('desc' in clean) clean.desc = sharedText(clean.desc, 2000);
+    if ('url' in clean) clean.url = sharedText(clean.url, 2000);
+    return jsonCopy(clean);
+  }).filter(c => c.id && c.n);
+  return {
+    opengym_plan: 1,
+    exported: /^\d{4}-\d{2}-\d{2}$/.test(raw.exported) ? raw.exported : new Date().toISOString().slice(0, 10),
+    name: sharedText(raw.name, SHARED_TITLE_MAX),
+    unit: raw.unit === 'lb' ? 'lb' : 'kg',
+    week,
+    routines,
+    customEx,
+  };
+}
+
+const sharedPlanOwner = p => db.users.find(u => u.id === p.ownerId && !u.disabled) || null;
+function sharedPlanCard(p, includeBundle = false) {
+  const owner = sharedPlanOwner(p);
+  if (!owner) return null;
+  const routines = records(p.bundle?.routines);
+  return {
+    id: p.id,
+    title: p.title,
+    summary: p.summary || '',
+    owner: { id: owner.id, name: owner.name },
+    template: p.template === true,
+    created: p.created,
+    updated: p.updated || p.created,
+    routineCount: routines.length,
+    exerciseCount: routines.reduce((n, r) => n + records(r.ex).length, 0),
+    scheduledDays: Object.values(record(p.bundle?.week) ? p.bundle.week : {}).filter(v => Array.isArray(v) ? v.length : !!v).length,
+    ...(includeBundle ? { bundle: p.bundle } : {}),
+  };
+}
+
+function visibleSharedPlans() {
+  return db.sharedPlans.map(p => sharedPlanCard(p)).filter(Boolean).sort((a, b) =>
+    Number(b.template) - Number(a.template)
+      || a.owner.name.localeCompare(b.owner.name)
+      || (b.updated || '').localeCompare(a.updated || ''));
+}
 
 /* ---------- push notifications (Web Push / VAPID) ---------- */
 const vapidFile = path.join(DATA, 'vapid.json');
@@ -1374,6 +1495,7 @@ async function removeEmail(req, res, user, body) {
 // credential and their photos and videos. The admin's delete and the account's own both end here.
 function removeAccount(u) {
   db.users = db.users.filter(x => x.id !== u.id);
+  db.sharedPlans = db.sharedPlans.filter(p => p.ownerId !== u.id);
   db.creds = (db.creds || []).filter(c => c.userId !== u.id);
   db.subs = (db.subs || []).filter(x => x.userId !== u.id);
   dropDeviceLinks(db, u.id);
@@ -2744,6 +2866,87 @@ const routes = {
       // photos and videos are the owner's own: the admin view gets no refs to them.
       workouts: records(S.workouts).reverse().map(({ media, ...w }) => w)
     });
+  },
+
+  /* ---------- shared plans ---------- */
+  // The gallery is instance-private: a plan was shared with the other profiles on this server,
+  // not published to the internet. Guest mode never talks to the API and gets no gallery.
+  'GET /api/shared-plans': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    json(res, 200, { plans: visibleSharedPlans() });
+  },
+
+  'GET /api/shared-plan': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const id = new URL(req.url, 'http://x').searchParams.get('id') || '';
+    const found = db.sharedPlans.find(p => p.id === id);
+    const plan = found && sharedPlanCard(found, true);
+    if (!plan) return json(res, 404, { error: 'no such shared plan' });
+    json(res, 200, { plan });
+  },
+
+  'POST /api/shared-plans/publish': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    if (db.sharedPlans.filter(p => p.ownerId === user.id).length >= MAX_SHARED_PLANS) {
+      return json(res, 409, { error: `a profile can share at most ${MAX_SHARED_PLANS} plans`, code: 'shared-plan-limit' });
+    }
+    const body = await readBody(req);
+    const bundle = cleanSharedBundle(body.bundle);
+    const title = sharedText(body.title || bundle?.name, SHARED_TITLE_MAX);
+    if (!bundle || !title) return json(res, 400, { error: 'a named, non-empty plan is required', code: 'shared-plan-invalid' });
+    bundle.name = title;
+    const now = new Date().toISOString();
+    const plan = {
+      id: crypto.randomUUID(), ownerId: user.id, title,
+      summary: sharedText(body.summary, SHARED_SUMMARY_MAX),
+      template: false, created: now, updated: now, bundle,
+    };
+    db.sharedPlans.push(plan);
+    saveDb();
+    json(res, 201, { plan: sharedPlanCard(plan) });
+  },
+
+  // Owners edit the title and explanation of their own snapshot. An admin may do that for any
+  // shared plan and is the only role that can mark one as an instance template.
+  'POST /api/shared-plans/update': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const plan = db.sharedPlans.find(p => p.id === body.id);
+    if (!plan || !sharedPlanOwner(plan)) return json(res, 404, { error: 'no such shared plan' });
+    const admin = isAdmin(user);
+    if (plan.ownerId !== user.id && !admin) return json(res, 403, { error: 'forbidden' });
+    if (body.title != null) {
+      const title = sharedText(body.title, SHARED_TITLE_MAX);
+      if (!title) return json(res, 400, { error: 'plan name required' });
+      plan.title = title;
+      plan.bundle.name = title;
+    }
+    if (body.summary != null) plan.summary = sharedText(body.summary, SHARED_SUMMARY_MAX);
+    if (body.template != null) {
+      if (!admin) return json(res, 403, { error: 'only an admin can set a template' });
+      plan.template = body.template === true;
+    }
+    plan.updated = new Date().toISOString();
+    saveDb();
+    if (admin) audit(req, 'admin.plan.update', { user, msg: plan.id });
+    json(res, 200, { plan: sharedPlanCard(plan) });
+  },
+
+  'POST /api/shared-plans/delete': async (req, res) => {
+    const user = readSession(req);
+    if (!user) return json(res, 401, { error: 'not signed in' });
+    const body = await readBody(req);
+    const plan = db.sharedPlans.find(p => p.id === body.id);
+    if (!plan) return json(res, 404, { error: 'no such shared plan' });
+    if (plan.ownerId !== user.id && !isAdmin(user)) return json(res, 403, { error: 'forbidden' });
+    db.sharedPlans = db.sharedPlans.filter(p => p.id !== plan.id);
+    saveDb();
+    if (isAdmin(user)) audit(req, 'admin.plan.delete', { user, msg: plan.id });
+    json(res, 200, { ok: true, id: plan.id });
   },
 
   // A recovery code (#584): for someone who lost every way in, on any instance, password sign-in

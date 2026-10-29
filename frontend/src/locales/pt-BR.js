@@ -2,8 +2,13 @@
 // Tests fingerprint every deliberately inherited entry so upstream changes require review.
 // Some byte-identical overrides intentionally pin wording that must not drift with pt-PT.
 import pt from './pt.js'
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 
 export const PT_BR_OVERRIDES = {
+  // The shared-plan feature currently falls back to its reviewed English copy in Portuguese.
+  // Pin it here rather than silently inheriting it from pt-PT, where the inheritance fingerprint
+  // is deliberately reserved for region-neutral Portuguese wording.
+  ...sharedPlanStrings('pt-BR'),
   'The search finds it by these too. Separate them with commas.': 'A busca também encontra o exercício por estes. Separe com vírgulas.',
   'Save names': 'Salvar nomes',
   'Handy when you compare with another app. Records ignore warm-ups either way.': 'Ajuda quando você compara com outro app. Os recordes ignoram o aquecimento de qualquer jeito.',

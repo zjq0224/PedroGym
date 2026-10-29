@@ -1,5 +1,7 @@
 // French UI strings. Keys are the English source strings (see lib/i18n.js).
+import { sharedPlanStrings } from '../lib/shared-plan-locales.js'
 export default {
+  ...sharedPlanStrings('fr'),
   'Confirm': 'Confirmer',
   'Cancel': 'Annuler',
   'Press back again to exit': 'Appuie de nouveau pour quitter',

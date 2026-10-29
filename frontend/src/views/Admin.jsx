@@ -324,6 +324,7 @@ export default function Admin() {
   const [users, setUsers] = useState(null)
   const [usersErr, setUsersErr] = useState(null)   // why the last load failed, until one succeeds
   const [invites, setInvites] = useState(null)
+  const [sharedPlans, setSharedPlans] = useState(null)
   const [inviteOnly, setInviteOnly] = useState(false)
   const [tick, setTick] = useState(0)          // the ↻ button; the activity log listens to it
 
@@ -338,8 +339,9 @@ export default function Admin() {
     })
     .catch(e => setUsersErr(e.message || 'Failed to load'))
   const loadInvites = () => api('/api/admin/invites').then(d => setInvites(d.invites)).catch(() => {})
+  const loadSharedPlans = () => api('/api/shared-plans').then(d => setSharedPlans(Array.isArray(d.plans) ? d.plans : [])).catch(() => setSharedPlans([]))
   // poll every 15s so the "training now" section stays live without a manual refresh
-  useEffect(() => { if (!user?.admin) return; loadUsers(); loadInvites(); const iv = setInterval(loadUsers, 15000); return () => clearInterval(iv) }, [])
+  useEffect(() => { if (!user?.admin) return; loadUsers(); loadInvites(); loadSharedPlans(); const iv = setInterval(loadUsers, 15000); return () => clearInterval(iv) }, [])
   if (!user?.admin) return null
 
   // From the list rather than the stored session, which may predate a handover.
@@ -354,7 +356,7 @@ export default function Admin() {
       <button className="iconbtn" data-back="/settings/account" onClick={() => nav('/settings/account')} aria-label="Back"><Icon name="chevronLeft" /></button>
       <div style={{ flex: 1, marginInlineStart: 12 }}><h1 style={{ margin: 0 }}>Admin</h1>
         <div className="sub">{users ? users.length + ' users · ' + activeCount + ' active this week' : usersErr ? 'Could not load' : 'Loading…'}</div></div>
-      <button className="iconbtn" onClick={() => { loadUsers(); loadInvites(); setTick(n => n + 1) }} aria-label="refresh">↻</button>
+      <button className="iconbtn" onClick={() => { loadUsers(); loadInvites(); loadSharedPlans(); setTick(n => n + 1) }} aria-label="refresh">↻</button>
     </div>
     <div className="adm-intro">
       Everything about running this instance: who uses it, how they get in, the AI Coach, and what has happened on it. Nothing here shows anyone's training data beyond counts.
@@ -384,6 +386,22 @@ export default function Admin() {
         <span className="adm-pill acc">{dur(Date.now() - u.live.startedAt)}</span>
       </div>)}
     </div>}
+
+    <div className="card">
+      <div className="row between"><h2 style={{ margin: 0 }}>Shared plans</h2>
+        <Button size="sm" trailingIcon="chevronRight" onClick={() => nav('/plans')}>Open library</Button></div>
+      <div className="adm-lead">Plans users deliberately made visible on this instance. Open one to add an explanation, mark it as a template, or remove the shared snapshot.</div>
+      <div className="list">
+        {(sharedPlans || []).map(p => <div className="item" key={p.id} onClick={() => nav('/plans/' + p.id)}>
+          <span className="lrow-i" style={p.template ? { color: 'var(--acc)', background: 'var(--acc-soft)' } : undefined}><Icon name={p.template ? 'crown' : 'clipboard'} /></span>
+          <div className="grow"><div className="tt">{p.title}{p.template && <span className="adm-pill acc" style={{ marginInlineStart: 5 }}>template</span>}</div>
+            <div className="ss">{p.owner.name} · {p.routineCount} routines · {p.exerciseCount} exercises</div></div>
+          <Icon name="chevronRight" className="chev" />
+        </div>)}
+        {sharedPlans && !sharedPlans.length && <div className="adm-empty">No plans have been shared yet.</div>}
+        {!sharedPlans && <div className="adm-empty">Loading…</div>}
+      </div>
+    </div>
 
     {/* The Coach setup. Renders nothing at all unless the instance offers the Coach, so an admin
         page on a box that never enabled it is byte-for-byte the page it was before. */}
