@@ -41,8 +41,22 @@ const setS = (over = {}) => useStore.setState(s => ({
 }))
 const mount = () => act(() => root.render(<Home />))
 const door = () => [...host.querySelectorAll('button')].find(b => b.textContent.includes('Choose a different workout'))
+const planActions = () => [...host.querySelectorAll('.home-plan-actions button')]
 
 describe('Home — the way to the Start screen when a plan already owns today', () => {
+  it('keeps plan setup and shared-plan discovery together whether a plan exists or not', () => {
+    setS(); useStore.setState({ user: { id: 'me', name: 'Me' } }); mount()
+    expect(planActions().map(b => b.textContent)).toEqual(['Set up in Plan', "Peek at gym buddies' plans"])
+    act(() => { planActions()[1].click() })
+    expect(nav).toHaveBeenCalledWith('/plans')
+
+    act(() => {
+      setS({ routines: [], week: {}, queue: null, rotation: null, scheduleMode: null })
+      useStore.setState({ user: { id: 'me', name: 'Me' } })
+    })
+    expect(planActions().map(b => b.textContent)).toEqual(['Set up in Plan', "Peek at gym buddies' plans"])
+  })
+
   it('offers the door on a planned day, where the Start button would start the plan', () => {
     setS(); mount()
     expect(door()).toBeTruthy()

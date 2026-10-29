@@ -51,6 +51,31 @@ compose=(
   -f "$repo_root/compose.local.yml"
 )
 
+# Docker Desktop's VM is deliberately small on the local host. BuildKit otherwise keeps every
+# unused layer from repeated frontend builds until the VM fills up, at which point even nginx can
+# start returning empty files. Prune only the build cache: running images and the pre-deploy data
+# snapshot remain available. The EXIT trap also covers a failed/interrupted build, which is when
+# partially-created cache is most likely to be left behind.
+cache_cleanup_pending=0
+cleanup_build_cache() {
+  local output
+  echo "Pruning unused Docker build cache ..."
+  if output="$(docker builder prune --all --force 2>&1)"; then
+    printf '%s\n' "$output"
+  else
+    echo "Warning: Docker build-cache cleanup failed; the deployment result is unchanged." >&2
+    printf '%s\n' "$output" >&2
+  fi
+}
+cleanup_on_exit() {
+  local status=$?
+  trap - EXIT
+  if [[ "$cache_cleanup_pending" -eq 1 ]]; then
+    cleanup_build_cache
+  fi
+  exit "$status"
+}
+
 # This is an immediate rollback snapshot, not an off-machine backup. The directory is ignored by
 # Git and created with owner-only permissions because it contains passkeys and session secrets.
 if [[ -d "$repo_root/data" ]]; then
@@ -66,6 +91,8 @@ if [[ -d "$repo_root/data" ]]; then
 fi
 
 echo "Building local images from Git $git_sha ..."
+cache_cleanup_pending=1
+trap cleanup_on_exit EXIT
 "${compose[@]}" build
 
 echo "Starting the locally built stack ..."
@@ -87,4 +114,7 @@ done
 
 health="$("${compose[@]}" exec -T web sh -c 'wget -qO- "http://127.0.0.1:${NGINX_PORT:-80}/api/health"')"
 echo "Health check: $health"
+cleanup_build_cache
+cache_cleanup_pending=0
+trap - EXIT
 echo "Local deployment is running Git $git_sha"

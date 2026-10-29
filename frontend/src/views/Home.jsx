@@ -118,7 +118,6 @@ export default function Home() {
           next session reaches it through effectiveRoutineIds like any planned routine. */}
       {rotating ? (queue ? <QueueRow S={S} today={todayISO()} onStart={onQueueStart} managed={managedQueue} /> : <div className="empty">
         {t('No rotation yet. Add routines to it in Plan.')}
-        <div style={{ marginTop: 10 }}><Button size="sm" variant="tinted" onClick={() => nav('/plan')}>{t('Set up in Plan')}</Button></div>
       </div>) : <>
         <div className="row between" style={{ marginBottom: 8 }}>
           <button className="iconbtn" style={{ width: 30, height: 30, fontSize: 15 }} onClick={() => setWeekOffset(w => w - 1)} aria-label={t('Previous week')}><Icon name="chevronLeft" /></button>
@@ -127,6 +126,12 @@ export default function Home() {
         </div>
         <div className="week">{strip}</div>
       </>}
+      {/* Plan discovery belongs beside plan setup, and stays available after a plan exists: the
+          shared library is useful for adding another split, not only as first-run onboarding. */}
+      <div className={'home-plan-actions' + (user ? '' : ' solo')}>
+        <Button size="sm" variant="tinted" icon="calendar" onClick={() => nav('/plan')}>{t('Set up in Plan')}</Button>
+        {user && <Button size="sm" variant="tinted" icon="person" onClick={() => nav('/plans')}>{t("Peek at gym buddies' plans")}</Button>}
+      </div>
       {/* Once today's session is logged the row stops asking for it. The week strip already
           knew (its dot goes 'done'); this row did not, so a finished day kept showing the
           routine name behind a green Start tag and read as still outstanding (issue #4).
