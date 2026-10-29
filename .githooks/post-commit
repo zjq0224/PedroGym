@@ -1,0 +1,21 @@
+#!/bin/sh
+# A post-commit hook cannot undo a commit. Keep the commit successful and print a clear warning if
+# the local build or deployment fails.
+
+if [ "${OPENGYM_SKIP_LOCAL_DEPLOY:-0}" = "1" ]; then
+  echo "[openGym] Skipping local Docker deployment."
+  exit 0
+fi
+
+repo_root="$(git rev-parse --show-toplevel)" || exit 0
+echo "[openGym] Building and deploying the committed revision to local Docker ..."
+
+if "$repo_root/scripts/deploy-local.sh"; then
+  echo "[openGym] Local Docker deployment completed."
+else
+  status=$?
+  echo "[openGym] Commit succeeded, but local Docker deployment failed (exit $status)." >&2
+  echo "[openGym] Fix the issue and run: npm run deploy:local" >&2
+fi
+
+exit 0

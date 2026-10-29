@@ -27,6 +27,28 @@ want. Run them from the repository root with Node 22 unless noted.
 Frontend-only helpers (locale checks, bundle size, the service worker stamp) live in
 `frontend/scripts/`, and the API's in `api/scripts/`.
 
+## Local Docker deployment
+
+`npm run deploy:local` builds `opengym-api:local` and `opengym-web:local` from the current clean
+Git revision, recreates the Compose stack, waits for both containers to become healthy, and checks
+that their image labels contain that revision. It creates an owner-only snapshot of `data/` in
+`.local-backups/` immediately before deployment. That snapshot is for quick rollback only; it is
+not a substitute for an encrypted off-machine backup.
+
+Run `npm run deploy:hook:install` once to enable the tracked `.githooks/post-commit` hook. Every
+successful commit will then run the same deployment synchronously, so `git commit` does not return
+until Docker is healthy or the deployment has failed. A failed deployment does not undo the Git
+commit and leaves an error in the terminal. Skip it for one commit with
+`OPENGYM_SKIP_LOCAL_DEPLOY=1 git commit ...`; disable it with
+`git config --unset core.hooksPath`.
+
+The local image names are intentionally separate from the upstream GHCR images in
+`docker-compose.yml`, so `docker compose pull` cannot replace a locally built image. For an
+intentional build of uncommitted work, use `npm run deploy:local:dirty`. Local builds use the
+official AWS Public ECR sources for the Node and NGINX base images because Docker Hub is not
+reachable from this host; override `LOCAL_NODE_IMAGE` or `LOCAL_NGINX_IMAGE` if needed. Normal
+upstream builds keep using the Dockerfile defaults.
+
 ## Release machine only
 
 These touch the licensed full-size animations, which never go into the repository or CI. They

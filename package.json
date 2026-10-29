@@ -1,4 +1,9 @@
 {
+  "scripts": {
+    "deploy:local": "bash scripts/deploy-local.sh",
+    "deploy:local:dirty": "bash scripts/deploy-local.sh --allow-dirty",
+    "deploy:hook:install": "bash scripts/install-local-deploy-hook.sh"
+  },
   "devDependencies": {
     "js-yaml": "^4.1.0"
   }

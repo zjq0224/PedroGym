@@ -11,23 +11,8 @@
 # The stage order matters: Docker builds the *last* stage when none is named, so `default` is
 # deliberately last and `coach` sits above it.
 
-FROM node:22.23.4-alpine AS base
-
-# Declared on the base stage so both targets inherit the labels and the healthcheck.
-ARG VERSION=dev
-ARG VCS_REF=dev
-ARG BUILD_DATE=unknown
-
-LABEL maintainer="Duarte Santos https://github.com/DuarteSantos8" \
-    org.opencontainers.image.title="opengym-api" \
-    org.opencontainers.image.description="Backend for Self-hosted gym & body-weight tracker — plan routines, log workouts (supersets & cardio too), track your weight and progress, passkey login. Your data, your server." \
-    org.opencontainers.image.source="https://github.com/DuarteSantos8/openGym" \
-    org.opencontainers.image.url="https://opengym.ch" \
-    org.opencontainers.image.documentation="https://github.com/DuarteSantos8/openGym#readme" \
-    org.opencontainers.image.licenses="AGPL-3.0-or-later" \
-    org.opencontainers.image.version=$VERSION \
-    org.opencontainers.image.revision=$VCS_REF \
-    org.opencontainers.image.created=$BUILD_DATE
+ARG NODE_IMAGE=node:22.23.4-alpine
+FROM ${NODE_IMAGE} AS base
 
 WORKDIR /app
 
@@ -55,6 +40,23 @@ RUN npm ci --omit=dev --omit=optional && npm cache clean --force
 # else, and one that is missing only shows at boot, as ERR_MODULE_NOT_FOUND.
 COPY server.js push-messages.js nudge.js nudge-copy.js verify-error.js password.js rate-limit.js passkeys-store.js device-link.js media.js queue.js sync-stamps.js durable.js admin-socket.js recover.js ./
 COPY coach ./coach
+
+# Declared after the dependency layers so changing only build metadata does not invalidate the
+# expensive apk/npm cache. Both final targets still inherit these labels from the base stage.
+ARG VERSION=dev
+ARG VCS_REF=dev
+ARG BUILD_DATE=unknown
+LABEL maintainer="Duarte Santos https://github.com/DuarteSantos8" \
+    org.opencontainers.image.title="opengym-api" \
+    org.opencontainers.image.description="Backend for Self-hosted gym & body-weight tracker — plan routines, log workouts (supersets & cardio too), track your weight and progress, passkey login. Your data, your server." \
+    org.opencontainers.image.source="https://github.com/DuarteSantos8/openGym" \
+    org.opencontainers.image.url="https://opengym.ch" \
+    org.opencontainers.image.documentation="https://github.com/DuarteSantos8/openGym#readme" \
+    org.opencontainers.image.licenses="AGPL-3.0-or-later" \
+    org.opencontainers.image.version=$VERSION \
+    org.opencontainers.image.revision=$VCS_REF \
+    org.opencontainers.image.created=$BUILD_DATE
+
 ENV NODE_ENV=production
 ENV PORT=3000
 EXPOSE 3000
