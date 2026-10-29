@@ -1802,6 +1802,7 @@ export default {
   'Look & Home': 'Aspecto e Inicio',
   'Data & backup': 'Datos y copias',
   'About & updates': 'Información y actualizaciones',
+  'User guide': 'User guide',
   'Fine-tuning': 'Ajustes finos',
   'Logging': 'Registro',
   'Before and during': 'Antes y durante',

@@ -61,7 +61,7 @@ import GymReminderPage, { GymEditPage } from './GymReminder.jsx'
 import { readGymConfig } from '../lib/gym-reminder.js'
 import { THEMES, inSeason, seasonChoice, activeSeason } from '../lib/seasonal.js'
 
-/* Settings (v1.3.11). The root is one screen: an account card, eleven rows that each open a page
+/* Settings (v1.3.11). The root is one screen: an account card and grouped rows that each open a page
    (/settings/<page>), and a search over every row. Rare things live one level further down
    (Workout → Fine-tuning). The rows and their rules are the ones the single long page had; only
    where they sit changed. settings-pages.js says which page holds what, and is what the search
@@ -947,6 +947,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
         onChange={ev => { const f = ev.target.files[0]; if (f) importFromApp(f); ev.target.value = '' }} />
     </>,
 
+    guide: () => <UserGuidePage nav={nav} open={open} language={lang} />,
+
     about: () => <>
       {/* Updates. On Android the row is always there: it checks on demand and installs when a
           release is newer (checksum verified, see onUpdateRowClick). On the web the app updates
@@ -1146,6 +1148,76 @@ function SettingsRoot({ ctx, preview, open, user, sync, home, go, entryKey }) {
       <div className="dim small sp-version">openGym v{__APP_VERSION__}</div>
     </>}
   </div>
+}
+
+const GUIDE_COPY = {
+  en: {
+    intro: 'A quick tour from your first plan to saved progress. Tap a topic to go there.',
+    start: 'Start', more: 'More', plan: 'Plan & schedule', home: 'Home', workout: 'Workout',
+    progress: 'Progress & history', exercises: 'Exercises', settings: 'Settings', data: 'Data & backup',
+    planText: 'Set up a weekly schedule or rotation, then add routines with exercises, sets, reps and progression.',
+    homeText: 'Home shows what is planned today. Start it, resume an active workout, or choose another routine.',
+    workoutText: 'Enter the weight and reps you actually did, tap each set when it is complete, then finish to save the workout.',
+    progressText: 'History keeps every workout. Stats turns them into strength, volume, muscle balance and body-weight trends.',
+    exercisesText: 'Search the exercise library, filter by equipment, and open any exercise for instructions and the muscles it trains.',
+    settingsText: 'Set your units, equipment, rest timer, alerts and workout layout here. Changes apply to future workouts.',
+    dataText: 'Export a backup regularly. If you use an account, openGym also syncs changes between your signed-in devices.',
+  },
+  zh: {
+    intro: '从第一次制定计划到保存训练进度的快速指南。点按主题即可前往对应页面。',
+    start: '开始', more: '更多功能', plan: '计划与安排', home: '首页', workout: '训练',
+    progress: '进度与历史', exercises: '动作库', settings: '设置', data: '数据与备份',
+    planText: '设置固定周计划或轮换，然后添加包含动作、组数、次数和进阶方式的训练日。',
+    homeText: '首页会显示今天的安排。你可以开始训练、继续进行中的训练，或改选其他训练日。',
+    workoutText: '输入实际完成的重量和次数，完成一组就点一下，最后结束训练并保存记录。',
+    progressText: '历史记录会保留每次训练；统计会把它们整理为力量、容量、肌肉平衡和体重趋势。',
+    exercisesText: '搜索动作库、按器械筛选，并打开动作查看做法和训练到的肌肉。',
+    settingsText: '在这里设置单位、器械、休息计时、提醒和训练布局。修改会应用到之后的训练。',
+    dataText: '定期导出备份。使用账号时，openGym 还会在已登录的设备之间同步更改。',
+  },
+  ja: {
+    intro: '最初のプラン作成から進捗の保存までを簡単に案内します。項目をタップすると該当画面に移動します。',
+    start: 'はじめる', more: 'さらに活用', plan: 'プランとスケジュール', home: 'ホーム', workout: 'ワークアウト',
+    progress: '進捗と履歴', exercises: 'エクササイズ', settings: '設定', data: 'データとバックアップ',
+    planText: '週間スケジュールまたはローテーションを設定し、エクササイズ、セット、回数、進行ルールを含むルーティンを追加します。',
+    homeText: 'ホームには今日の予定が表示されます。開始、進行中のワークアウトの再開、または別のルーティンの選択ができます。',
+    workoutText: '実際に行った重量と回数を入力し、完了したセットをタップして、最後に終了してワークアウトを保存します。',
+    progressText: '履歴にはすべてのワークアウトが保存されます。統計では筋力、ボリューム、筋肉バランス、体重の推移を確認できます。',
+    exercisesText: 'エクササイズライブラリを検索し、器具で絞り込み、各エクササイズの手順と鍛えられる筋肉を確認できます。',
+    settingsText: '単位、器具、休憩タイマー、通知、ワークアウトのレイアウトを設定します。変更は今後のワークアウトに適用されます。',
+    dataText: '定期的にバックアップをエクスポートしてください。アカウントを使用している場合、ログイン済みデバイス間でも変更が同期されます。',
+  },
+}
+
+function UserGuidePage({ nav, open, language }) {
+  const [guideLanguage, setGuideLanguage] = useState(String(language).startsWith('zh') ? 'zh' : 'en')
+  const c = GUIDE_COPY[guideLanguage]
+  return <>
+    <div className="guide-language">
+      <Segmented value={guideLanguage} onChange={setGuideLanguage} options={[
+        { value: 'zh', label: '中文' }, { value: 'en', label: 'English' }, { value: 'ja', label: '日本語' },
+      ]} />
+    </div>
+    <p className="guide-intro">{c.intro}</p>
+    <Section title={c.start}>
+      <Row icon="calendar" iconTint="var(--orange)" title={c.plan} subtitle={c.planText}
+        accessory="chevron" onClick={() => nav('/plan')} />
+      <Row icon="house" iconTint="var(--green)" title={c.home} subtitle={c.homeText}
+        accessory="chevron" onClick={() => nav('/home')} />
+      <Row icon="play" iconTint="var(--green)" title={c.workout} subtitle={c.workoutText}
+        accessory="chevron" onClick={() => nav('/workout')} />
+    </Section>
+    <Section title={c.more}>
+      <Row icon="chart" iconTint="var(--blue)" title={c.progress} subtitle={c.progressText}
+        accessory="chevron" onClick={() => nav('/stats')} />
+      <Row icon="dumbbell" iconTint="var(--indigo)" title={c.exercises} subtitle={c.exercisesText}
+        accessory="chevron" onClick={() => nav('/library')} />
+      <Row icon="gear" iconTint="var(--grey)" title={c.settings} subtitle={c.settingsText}
+        accessory="chevron" onClick={() => open('workout')} />
+      <Row icon="folder" iconTint="var(--teal)" title={c.data} subtitle={c.dataText}
+        accessory="chevron" onClick={() => open('data')} />
+    </Section>
+  </>
 }
 
 // The whole point is that the two scales are one judgement counted from opposite ends, and a

@@ -1799,6 +1799,7 @@ export default {
   'Look & Home': 'Вигляд і Головна',
   'Data & backup': 'Дані та копії',
   'About & updates': 'Про застосунок і оновлення',
+  'User guide': 'User guide',
   'Fine-tuning': 'Тонке налаштування',
   'Logging': 'Запис',
   'Before and during': 'До і під час',

@@ -1802,6 +1802,7 @@ export default {
   'Look & Home': '外观与首页',
   'Data & backup': '数据与备份',
   'About & updates': '关于与更新',
+  'User guide': '用户手册',
   'Fine-tuning': '细节调整',
   'Logging': '记录',
   'Before and during': '开始前与训练中',

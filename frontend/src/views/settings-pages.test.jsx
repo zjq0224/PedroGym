@@ -92,7 +92,7 @@ describe('the root', () => {
     expect(host.querySelector('.sp-acct .lrow-t').textContent).toBe('Guest')
     expect(host.querySelector('.sp-acct .lrow-s').textContent).toBe('Your data lives on this device. Sign in to sync.')
     // a guest in a browser has no reminders (no push server) and no Coach page (the server's Coach)
-    expect(titles()).toEqual(['Guest', 'Workout', 'Timer alerts', 'Plan & schedule', 'Units & language', 'Equipment', 'Look & Home', 'Data & backup', 'About & updates'])
+    expect(titles()).toEqual(['Guest', 'Workout', 'Timer alerts', 'Plan & schedule', 'Units & language', 'Equipment', 'Look & Home', 'Data & backup', 'User guide', 'About & updates'])
     expect(rowTitled('Workout').querySelector('.lrow-v').textContent).toBe('1:30 rest · Cards')
     expect(rowTitled('Timer alerts').querySelector('.lrow-v').textContent).toBe('Sound · Vibrate')
     expect(rowTitled('Plan & schedule').querySelector('.lrow-v').textContent).toMatch(/^Fixed Week · Mon/)
@@ -362,6 +362,18 @@ describe('the pages', () => {
     expect(mocks.navs.at(-1)).toEqual(['/settings/workout', { replace: true }])
   })
 
+  it('the user guide covers the main flow and links to the matching screens', () => {
+    mount('guide')
+    expect(host.querySelector('.sp-title').textContent).toBe('User guide')
+    expect(titles()).toEqual(['Plan & schedule', 'Home', 'Workout', 'Progress & history', 'Exercises', 'Settings', 'Data & backup'])
+    act(() => rowTitled('Plan & schedule').click())
+    act(() => rowTitled('Progress & history').click())
+    act(() => rowTitled('Data & backup').click())
+    expect(mocks.navs).toEqual([['/plan'], ['/stats'], ['/settings/data']])
+    act(() => [...host.querySelectorAll('.guide-language button')].find(b => b.textContent === '日本語').click())
+    expect(titles()).toEqual(['プランとスケジュール', 'ホーム', 'ワークアウト', '進捗と履歴', 'エクササイズ', '設定', 'データとバックアップ'])
+  })
+
   it('a search hit flashes its row', () => {
     mount('alerts', 'Flash the screen')
     expect(rowTitled('Flash the screen').classList.contains('sp-flash')).toBe(true)
@@ -428,6 +440,7 @@ describe('searchSettings', () => {
     const hits = searchSettings('units', guestWeb, tr)
     expect(hits[0]).toMatchObject({ title: 'Units & language', isPage: true, page: 'units' })
     expect(searchSettings('rest', guestWeb, tr).slice(0, 2).map(h => h.title)).toEqual(['Rest timer', 'Rest-pause rest'])
+    expect(searchSettings('help', guestWeb, tr)[0]).toMatchObject({ title: 'User guide', page: 'guide', isPage: true })
   })
 
   it('names Fine-tuning under Workout, and keeps to the rows this device shows', () => {

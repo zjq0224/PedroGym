@@ -1802,6 +1802,7 @@ export default {
   'Look & Home': '화면과 홈',
   'Data & backup': '데이터와 백업',
   'About & updates': '정보와 업데이트',
+  'User guide': 'User guide',
   'Fine-tuning': '세부 조정',
   'Logging': '기록',
   'Before and during': '시작 전과 운동 중',

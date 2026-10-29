@@ -1822,6 +1822,7 @@ export default {
   'Look & Home': 'Aussehen & Start',
   'Data & backup': 'Daten & Backup',
   'About & updates': 'Info & Updates',
+  'User guide': 'User guide',
   'Fine-tuning': 'Feinschliff',
   'Logging': 'Eintragen',
   'Before and during': 'Davor und währenddessen',

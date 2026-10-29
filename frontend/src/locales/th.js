@@ -1813,6 +1813,7 @@ export default {
   'Look & Home': 'หน้าตาและหน้าหลัก',
   'Data & backup': 'ข้อมูลและการสำรอง',
   'About & updates': 'เกี่ยวกับและอัปเดต',
+  'User guide': 'User guide',
   'Fine-tuning': 'ปรับละเอียด',
   'Logging': 'การบันทึก',
   'Before and during': 'ก่อนและระหว่างฝึก',

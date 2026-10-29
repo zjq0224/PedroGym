@@ -1844,6 +1844,7 @@ export default {
   'Look & Home': 'চেহারা ও হোম',
   'Data & backup': 'ডেটা ও ব্যাকআপ',
   'About & updates': 'পরিচিতি ও আপডেট',
+  'User guide': 'User guide',
   'Fine-tuning': 'সূক্ষ্ম সমন্বয়',
   'Logging': 'লগিং',
   'Before and during': 'আগে ও চলাকালীন',

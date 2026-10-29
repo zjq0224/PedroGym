@@ -1795,6 +1795,7 @@ export default {
   'Look & Home': '外觀與首頁',
   'Data & backup': '資料與備份',
   'About & updates': '關於與更新',
+  'User guide': '使用手冊',
   'Fine-tuning': '細節調整',
   'Logging': '紀錄',
   'Before and during': '開始前與訓練中',

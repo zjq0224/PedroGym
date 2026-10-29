@@ -1802,6 +1802,7 @@ export default {
   'Look & Home': 'Görünüm ve Ana sayfa',
   'Data & backup': 'Veriler ve yedek',
   'About & updates': 'Hakkında ve güncellemeler',
+  'User guide': 'User guide',
   'Fine-tuning': 'İnce ayarlar',
   'Logging': 'Kayıt',
   'Before and during': 'Önce ve sırasında',

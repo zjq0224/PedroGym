@@ -2342,6 +2342,8 @@ button.wl-summary{width:100%;padding:0 0 10px;text-align:start;border-radius:var
 .lrow.sp-flash,.btn.sp-flash{animation:spflash 1.8s ease}
 @keyframes spflash{0%,45%{background:var(--acc-soft)}100%{background:transparent}}
 .sp-empty{color:var(--label-2);text-align:center;padding:28px 12px;line-height:1.4}
+.guide-language{margin:0 4px 14px}
+.guide-intro{margin:0 4px 18px;color:var(--label-2);font-size:15px;line-height:1.5}
 
 /* ----------------------------------------------------------- RTL (Arabic) -- */
 /* Directional icons flip: back chevrons point right, trailing chevrons point left. */

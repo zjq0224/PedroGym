@@ -1806,6 +1806,7 @@ export default {
   'Look & Home': 'Вид и Главная',
   'Data & backup': 'Данные и копии',
   'About & updates': 'О приложении и обновления',
+  'User guide': 'User guide',
   'Fine-tuning': 'Тонкая настройка',
   'Logging': 'Запись',
   'Before and during': 'До и во время',

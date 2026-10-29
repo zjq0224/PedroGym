@@ -1802,6 +1802,7 @@ export default {
   'Look & Home': 'दिखावट और होम',
   'Data & backup': 'डेटा और बैकअप',
   'About & updates': 'जानकारी और अपडेट',
+  'User guide': 'User guide',
   'Fine-tuning': 'बारीक सेटिंग्स',
   'Logging': 'लॉगिंग',
   'Before and during': 'पहले और दौरान',

@@ -1823,6 +1823,7 @@ export default {
   'Look & Home': 'Utseende och Hem',
   'Data & backup': 'Data och backup',
   'About & updates': 'Om och uppdateringar',
+  'User guide': 'User guide',
   'Fine-tuning': 'Finjustering',
   'Logging': 'Loggning',
   'Before and during': 'Före och under',

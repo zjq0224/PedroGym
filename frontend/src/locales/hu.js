@@ -1805,6 +1805,7 @@ export default {
   'Look & Home': 'Megjelenés és Kezdőlap',
   'Data & backup': 'Adatok és mentés',
   'About & updates': 'Névjegy és frissítések',
+  'User guide': 'User guide',
   'Fine-tuning': 'Finomhangolás',
   'Logging': 'Rögzítés',
   'Before and during': 'Előtte és közben',

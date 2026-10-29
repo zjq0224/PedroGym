@@ -1857,6 +1857,7 @@ export default {
   'Look & Home': 'المظهر والرئيسية',
   'Data & backup': 'البيانات والنسخ الاحتياطي',
   'About & updates': 'حول التطبيق والتحديثات',
+  'User guide': 'User guide',
   'Fine-tuning': 'ضبط دقيق',
   'Logging': 'التسجيل',
   'Before and during': 'قبل التمرين وأثناءه',

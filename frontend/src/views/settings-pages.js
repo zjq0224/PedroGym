@@ -1,6 +1,6 @@
 // Settings (v1.3.11): which page each row lives on, and the index the search field reads.
 //
-// The root holds eleven rows in four groups plus the account card; each opens a page at
+// The root holds the main pages in four groups plus the account card; each opens a page at
 // /settings/<page>. Rare things hang one level further down (Workout → Fine-tuning). Titles here
 // are the English keys the pages render with t(), so a search hit can find its row on the page
 // by the same text and flash it (views/Settings.jsx). settings-pages.test.jsx renders every page
@@ -19,6 +19,7 @@ export const PAGES = {
   coach: { title: 'AI Coach', icon: 'sparkles', tint: 'var(--green)' },
   watch: { title: 'Apple Watch', icon: 'watch', tint: 'var(--grey)' },
   data: { title: 'Data & backup', icon: 'folder', tint: 'var(--blue)' },
+  guide: { title: 'User guide', icon: 'note', tint: 'var(--green)', kw: 'help manual guide instructions tutorial getting started' },
   about: { title: 'About & updates', icon: 'info', tint: 'var(--grey)' },
   account: { title: 'Account', icon: 'personCircle', tint: 'var(--grey)' },
   advanced: { title: 'Fine-tuning', icon: 'wrench', tint: 'var(--grey)', parent: 'workout' },
@@ -31,7 +32,7 @@ export const PAGES = {
 export const PAGE_IDS = Object.keys(PAGES)
 
 // The root, top to bottom. Whether a row shows is pageVisible's call.
-export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'about']]
+export const ROOT_GROUPS = [['workout', 'alerts', 'reminders'], ['plan', 'units', 'equipment'], ['look', 'coach', 'watch'], ['data', 'guide', 'about']]
 
 /**
  * Whether a page exists for this device and profile. Reminders need a push server (signed in) or
@@ -216,7 +217,7 @@ export function searchSettings(query, ctx, tr = t) {
     // The page itself too: Gym reminder hangs under Reminders, which the web has, but is the phone's.
     const top = PAGES[id].parent ? PAGES[id].parent : id
     if (!pageVisible(top, ctx) || !pageVisible(id, ctx) || id === 'advanced') continue
-    consider({ page: id, title: PAGES[id].title, icon: PAGES[id].icon, tint: PAGES[id].tint }, true)
+    consider({ page: id, ...PAGES[id] }, true)
   }
   for (const e of SEARCH) {
     if (!pageVisible(PAGES[e.page].parent || e.page, ctx)) continue
