@@ -1,6 +1,6 @@
-// A starter plan may ship its own stills without replacing the catalogue's licensed media.
-// The marker lives on an exercise occurrence, not the catalogue entry: the same bench press in
-// another routine keeps the ordinary openGym animation. Keep this allow-list explicit because a
+// Original still packs live apart from the catalogue's licensed media. A plan may explicitly
+// request an allow-listed pack, while GLOBAL_PACK_BY_ID makes a curated pack the default anywhere
+// that exercise appears (library, picker, plan and workout). Keep both maps explicit because a
 // shared plan file is untrusted input and must never turn an arbitrary string into an asset URL.
 const PACKS = {
   tanchengyi: new Set([
@@ -11,12 +11,20 @@ const PACKS = {
   ]),
 }
 
+const GLOBAL_PACK_BY_ID = new Map(
+  [...PACKS.tanchengyi].map(id => [id, 'tanchengyi']),
+)
+
 export const cleanTemplateMediaPack = (pack, exerciseId) =>
   typeof pack === 'string' && PACKS[pack]?.has(String(exerciseId)) ? pack : ''
 
+export const globalTemplateMediaPack = exerciseId =>
+  GLOBAL_PACK_BY_ID.get(String(exerciseId)) || ''
+
 export const templateMediaSrc = (ex, pack) => {
-  const clean = cleanTemplateMediaPack(pack, ex?.id)
-  return clean ? `template-media/${clean}/${ex.id}.png` : null
+  const id = String(ex?.id || '')
+  const clean = cleanTemplateMediaPack(pack, id) || globalTemplateMediaPack(id)
+  return clean ? `template-media/${clean}/${id}.webp` : null
 }
 
 export const templateMediaIds = pack => [...(PACKS[pack] || [])]

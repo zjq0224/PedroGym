@@ -1,8 +1,13 @@
-# Tan Chengyi starter-plan media pack
+# Tan Chengyi exercise media override
 
-This directory is intentionally separate from `catalogue/media/`. Its PNG files are original,
-AI-generated stills for exercise occurrences in the Tan Chengyi starter plan; they do not replace,
-modify or derive from openGym's Gym visual-licensed catalogue media.
+This directory is intentionally separate from `catalogue/media/`. Its WebP files are original,
+AI-generated stills for all 18 exercises in the Tan Chengyi plan. The UI globally prefers these
+stills whenever a mapped exercise ID appears in the library, picker, a plan or a workout. The
+licensed files remain unmodified and are used as a runtime fallback if an override cannot load.
+
+Every exercise still uses the same identity reference and visual treatment: rectangular glasses,
+long hair in a bun, black training clothes, realistic muscular proportions, transparent background
+and side-by-side movement phases where useful. `3329.webp` uses a modern Roman-chair apparatus.
 
 Identity references were taken from Tan Chengyi's public official Douyin workout video and profile
 avatar. The source photos and video are not distributed with openGym. The generated likeness must

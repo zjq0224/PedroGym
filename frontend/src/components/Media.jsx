@@ -17,18 +17,19 @@ export default function Media(p) {
   return templateMediaSrc(p.ex, p.mediaPack) ? <TemplateMedia {...p} /> : <BuiltinMedia {...p} />
 }
 
-// A branded starter plan's original still. It is deliberately a still rather than an animation:
-// these assets are a separate, consent-dependent pack, not edits of catalogue/media. If a build
-// omits the pack or one file fails, the ordinary licensed animation remains the safe fallback.
+// A curated original still. It is deliberately a still rather than an animation: these assets
+// are a separate, consent-dependent pack, not edits of catalogue/media. If a build omits the pack
+// or one file fails, the ordinary licensed animation remains the safe fallback.
 function TemplateMedia({ ex, mediaPack, id, compact, minimizable }) {
-  const [failed, setFailed] = useState(false)
+  const src = templateMediaSrc(ex, mediaPack)
+  const [broken, setBroken] = useState(null)
   const gifSize = useStore(s => s.S.gifSize)
-  if (failed) return <BuiltinMedia ex={ex} id={id} compact={compact} minimizable={minimizable} />
+  if (broken === src) return <BuiltinMedia ex={ex} id={id} compact={compact} minimizable={minimizable} />
   if (minimizable && gifSize === 'off') return null
   const mini = minimizable && gifSize === 'mini'
   if (mini) return null
   return <div className={'exmedia' + (compact ? ' compact' : '')} id={id}>
-    <img decoding="async" draggable={false} src={templateMediaSrc(ex, mediaPack)} alt={exerciseNameFor(ex)} onError={() => setFailed(true)} />
+    <img decoding="async" draggable={false} src={src} alt={exerciseNameFor(ex)} onError={() => setBroken(src)} />
   </div>
 }
 
@@ -186,13 +187,14 @@ export function autoplayClip(el) {
 export function Thumb(p) {
   return isCustomEx(p.ex) ? <CustomThumb {...p} /> : <BuiltinThumb {...p} />
 }
-function BuiltinThumb({ ex, mediaPack }) {
+function BuiltinThumb({ ex, mediaPack, catalogueOnly = false }) {
   const body = useStore(s => figureOf(s.S))
-  const own = templateMediaSrc(ex, mediaPack)
+  const own = catalogueOnly ? null : templateMediaSrc(ex, mediaPack)
   const src = own || (ex.img ? imgSrc(ex, body) : null)
   const [broken, setBroken] = useState(null)
-  // A missing optional pack image falls back to the catalogue still instead of a broken tile.
-  if (own && broken === own) return <BuiltinThumb ex={ex} />
+  // A missing curated image falls back to the catalogue still instead of a broken tile. The flag
+  // prevents the global override from selecting the same missing image again.
+  if (own && broken === own) return <BuiltinThumb ex={ex} catalogueOnly />
   if (!src || broken === src) return <div className="thumb thumb-x"><Icon name="dumbbell" /></div>
   return <img className="thumb" loading="lazy" decoding="async" draggable={false} src={src} alt="" onError={() => setBroken(src)} />
 }

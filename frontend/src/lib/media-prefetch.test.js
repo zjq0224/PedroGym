@@ -6,11 +6,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { planMediaUrls, prefetchAllowed, prefetchMedia, startMediaPrefetch, installedApp, MEDIA_CACHE, PREFETCH_DELAY_MS } from './media-prefetch.js'
 import { EXIDX, imgSrc, gifSrc } from './exercises.js'
+import { templateMediaSrc } from './template-media.js'
 
 const BASE = 'https://gym.test/app/'
 const abs = src => new URL(src, BASE).href
 const bench = EXIDX['0025'] || Object.values(EXIDX).find(e => e.gif)
 const other = Object.values(EXIDX).find(e => e.gif && e.id !== bench.id)
+const mediaUrlsFor = ex => [templateMediaSrc(ex), gifSrc(ex), imgSrc(ex)].filter(Boolean).map(abs)
 
 const answer = (status = 200) => ({ ok: status < 400, status, arrayBuffer: async () => new ArrayBuffer(1) })
 const cacheWith = urls => ({ match: async u => (urls.includes(u) ? {} : undefined) })
@@ -24,7 +26,11 @@ describe('planMediaUrls', () => {
       active: { entries: [{ id: other.id }, { id: bench.id }] },
     }
     const urls = planMediaUrls(S, BASE, { ...EXIDX, 'custom-1': { id: 'custom-1', n: 'Mine' } })
-    expect(urls.sort()).toEqual([abs(gifSrc(bench)), abs(imgSrc(bench)), abs(gifSrc(other)), abs(imgSrc(other))].sort())
+    expect(urls.sort()).toEqual([
+      abs(templateMediaSrc(bench)), abs(gifSrc(bench)), abs(imgSrc(bench)),
+      ...(templateMediaSrc(other) ? [abs(templateMediaSrc(other))] : []),
+      abs(gifSrc(other)), abs(imgSrc(other)),
+    ].sort())
   })
 
   it('an empty or missing plan needs nothing', () => {
@@ -33,14 +39,16 @@ describe('planMediaUrls', () => {
     expect(planMediaUrls({ routines: [{ ex: [{ id: bench.id }] }] }, undefined)).toEqual([])
   })
 
-  it('leaves out media a build points at another origin, which never passes through the worker', async () => {
+  it('leaves out catalogue media on another origin but keeps the bundled curated still', async () => {
     // The demo build's media comes from a CDN (VITE_IMG_BASE/VITE_GIF_BASE, read at load).
     vi.resetModules()
     vi.stubEnv('VITE_IMG_BASE', 'https://cdn.test/images/')
     vi.stubEnv('VITE_GIF_BASE', 'https://cdn.test/videos/')
     try {
       const fresh = await import('./media-prefetch.js')
-      expect(fresh.planMediaUrls({ routines: [{ ex: [{ id: bench.id }] }] }, BASE)).toEqual([])
+      expect(fresh.planMediaUrls({ routines: [{ ex: [{ id: bench.id }] }] }, BASE)).toEqual([
+        abs(templateMediaSrc(bench)),
+      ])
     } finally { vi.unstubAllEnvs(); vi.resetModules() }
   })
 })
@@ -145,19 +153,19 @@ describe('startMediaPrefetch', () => {
     await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
     await flush()
     expect(cachesApi.open).toHaveBeenCalledWith(MEDIA_CACHE)
-    expect(fetchImpl.mock.calls.map(c => c[0]).sort()).toEqual([abs(gifSrc(bench)), abs(imgSrc(bench))].sort())
+    expect(fetchImpl.mock.calls.map(c => c[0]).sort()).toEqual(mediaUrlsFor(bench).sort())
 
     // Something unrelated changes: nothing new to fetch.
     store.set({ ...store.state.S, unit: 'lb' })
     await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
     await flush()
-    expect(fetchImpl).toHaveBeenCalledTimes(2)
+    expect(fetchImpl).toHaveBeenCalledTimes(mediaUrlsFor(bench).length)
 
-    // A routine gains an exercise: its two files, and only those.
+    // A routine gains an exercise: only its curated/fallback files are added.
     store.set({ routines: [{ ex: [{ id: bench.id }, { id: other.id }] }] })
     await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
     await flush()
-    expect(fetchImpl.mock.calls.slice(2).map(c => c[0]).sort()).toEqual([abs(gifSrc(other)), abs(imgSrc(other))].sort())
+    expect(fetchImpl.mock.calls.slice(mediaUrlsFor(bench).length).map(c => c[0]).sort()).toEqual(mediaUrlsFor(other).sort())
     stop()
   })
 
@@ -214,7 +222,7 @@ describe('startMediaPrefetch', () => {
     const stopIos = startMediaPrefetch(ios.store, { win: ios.win, nav: ios.nav, cachesApi: ios.cachesApi })
     await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
     await flush()
-    expect(ios.fetchImpl).toHaveBeenCalledTimes(2)
+    expect(ios.fetchImpl).toHaveBeenCalledTimes(mediaUrlsFor(bench).length)
     stopIos()
 
     const tab = setup({ win: fakeWindow() })
@@ -225,7 +233,7 @@ describe('startMediaPrefetch', () => {
     tab.win.become(true)
     await vi.advanceTimersByTimeAsync(PREFETCH_DELAY_MS)
     await flush()
-    expect(tab.fetchImpl.mock.calls.map(c => c[0]).sort()).toEqual([abs(gifSrc(bench)), abs(imgSrc(bench))].sort())
+    expect(tab.fetchImpl.mock.calls.map(c => c[0]).sort()).toEqual(mediaUrlsFor(bench).sort())
     stop()
     expect(tab.win.listeners.size).toBe(0)
   })

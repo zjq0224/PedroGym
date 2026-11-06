@@ -43,11 +43,11 @@ describe('Thumb', () => {
     expect(host.querySelector('.thumb-x')).toBeTruthy()
   })
 
-  it('uses a starter-plan still only for that occurrence and falls back if it is absent', () => {
+  it('uses the curated still globally and falls back to the catalogue if it is absent', () => {
     const ex = { id: '0025', img: '0025.webp' }
-    const { host } = mount(<Thumb ex={ex} mediaPack="tanchengyi" />)
+    const { host } = mount(<Thumb ex={ex} />)
     const img = host.querySelector('img.thumb')
-    expect(img.getAttribute('src')).toBe('template-media/tanchengyi/0025.png')
+    expect(img.getAttribute('src')).toBe('template-media/tanchengyi/0025.webp')
     act(() => { img.dispatchEvent(new Event('error')) })
     expect(host.querySelector('img.thumb').getAttribute('src')).toMatch(/exercise-media\/still\/0025\.webp$/)
   })
