@@ -27,15 +27,22 @@ const APPROVED = {
     [3, '5×5 B', [['0085', 5, 5], ['0426', 5, 5], ['2330', 5, 5]]],
     [5, '5×5 C', [['0739', 5, 5], ['0047', 5, 5], ['1323', 5, 5]]],
   ],
+  tanchengyi: [
+    [1, '谭成义 · 推日', [['0025', 4, 15], ['0314', 4, 12], ['0251', 4, 12], ['0061', 4, 15], ['5818', 3, 20]]],
+    [2, '谭成义 · 拉日', [['1204', 4, 24], ['7583', 4, 10], ['1235', 4, 20], ['0218', 4, 12], ['1636', 3, 12]]],
+    [3, '谭成义 · 腿日', [['1757', 4, 20], ['2290', 4, 20], ['0042', 4, 10], ['0085', 4, 10], ['0489', 4, 15]]],
+    [5, '谭成义 · 腹部训练', [['3329', 4, 12], ['0472', 4, 12], ['0175', 4, 12]]],
+  ],
 }
 
 const shape = r => r.ex.map(e => [e.id, e.sets, e.reps])
 
 describe('starter plan catalog', () => {
-  it('offers exactly the four plans, with the day count read off the schedule', () => {
+  it('offers every plan, with the day count read off the schedule', () => {
     expect(starterPlanOptions()).toEqual([
       { id: 'ppl', days: 3 }, { id: 'upper-lower', days: 4 },
       { id: 'full-body', days: 3 }, { id: '5x5', days: 3 },
+      { id: 'tanchengyi', days: 4 },
     ])
     for (const { id, days } of starterPlanOptions()) expect(starterPlanDays(id)).toHaveLength(days)
   })
@@ -46,6 +53,16 @@ describe('starter plan catalog', () => {
     // A click handler wired straight to a loader would hand the event in as the plan.
     expect(buildStarterPlan({ type: 'click' })).toBeNull()
     expect(starterPlanDays('nope')).toBeNull()
+  })
+})
+
+describe('Tan Chengyi starter plan media', () => {
+  it('marks all 18 original exercise occurrences with the isolated media pack', () => {
+    const plan = buildStarterPlan('tanchengyi')
+    const entries = plan.routines.flatMap(r => r.ex)
+    expect(entries).toHaveLength(18)
+    expect(entries.every(e => e.mediaPack === 'tanchengyi')).toBe(true)
+    expect(entries.find(e => e.id === '0025')).toMatchObject({ pyramid: [15, 12, 10, 8], warmupSets: 3 })
   })
 })
 

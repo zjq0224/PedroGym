@@ -256,11 +256,16 @@ const SHARED_EX_FIELDS = [
   'pyramid', 'pyramidRest', 'pyramidWeight', 'bodyweight', 'side', 'prog', 'inc',
   'backoff', 'lastToFailure', 'deloadFactor', 'dbLoad', 'repsMin', 'setsMax',
   'repsMax', 'restSec', 'restOff', 'warmupRestSec', 'warmupRestOff', 'sideRestOff',
-  'sideRestSec', 'sg', 'sgName', 'sgRest', 'note', 'warmupSets', 'intensifier', 'subs'
+  'sideRestSec', 'sg', 'sgName', 'sgRest', 'note', 'warmupSets', 'intensifier', 'subs',
+  'mediaPack'
 ];
 const SHARED_CUSTOM_FIELDS = [
   'id', 'n', 'bp', 'aliases', 'desc', 'url', 'eq', 'tg', 'primaries', 'secondaries', 'muscleGroups'
 ];
+const TANCHENGYI_MEDIA_IDS = new Set([
+  '0025', '0314', '0251', '0061', '5818', '1204', '7583', '1235', '0218',
+  '1636', '1757', '2290', '0042', '0085', '0489', '3329', '0472', '0175'
+]);
 
 function cleanSharedBundle(raw) {
   if (!record(raw) || raw.opengym_plan !== 1 || !Array.isArray(raw.routines)) return null;
@@ -280,6 +285,7 @@ function cleanSharedBundle(raw) {
       if (exerciseCount > MAX_SHARED_EXERCISES) return null;
       const clean = own(item, SHARED_EX_FIELDS);
       clean.id = sharedText(item.id, 100);
+      if (clean.mediaPack !== 'tanchengyi' || !TANCHENGYI_MEDIA_IDS.has(clean.id)) delete clean.mediaPack;
       ex.push(jsonCopy(clean));
     }
     routines.push({

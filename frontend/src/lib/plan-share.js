@@ -18,6 +18,7 @@ import { isBackoff } from './backoff.js'
 import { dbLoadOf } from './dumbbells.js'
 import { MAX_TRIPLE_SETS } from './progression.js'
 import { uid, todayISO, DAYN, weekOrder, weekStartOf, exCount, routineCount } from './format.js'
+import { cleanTemplateMediaPack } from './template-media.js'
 import { t, exerciseNameFor, exerciseNameClass } from './i18n-core.js'
 import { convertWeight } from './units.js'
 import { fmtSpeed, speedUnitOf } from './speed.js'
@@ -153,6 +154,10 @@ function cleanEx(e) {
   // silently — parsePlan's `dropped` counter only tracks exercises it cannot resolve at all.
   const intens = cleanIntensifier(e.intensifier)
   if (intens) o.intensifier = intens
+  // A bundled starter-plan image pack is an occurrence-level presentation choice. Only a known
+  // pack for this exact catalogue id travels; arbitrary plan-file strings never become URLs.
+  const mediaPack = cleanTemplateMediaPack(e.mediaPack, e.id)
+  if (mediaPack) o.mediaPack = mediaPack
   return o
 }
 
@@ -291,9 +296,10 @@ export function parsePlan(raw, destinationUnit = 'kg') {
       const pyramid = normalizePyramid(e.pyramid)
       const pyramidRest = pyramid.length ? normalizePyramidRest(e.pyramidRest, pyramid.length) : []
       const pyramidWeight = pyramid.length ? normalizePyramidWeight(e.pyramidWeight, pyramid.length) : []
-      const { warmupSets, intensifier, restSec, restOff: _restOff, warmupRestSec, warmupRestOff: _warmOff, sideRestSec: _sideRest, sideRestOff: _sideOff, subs: _subs, pyramid: _pyramid, pyramidRest: _pyramidRest, pyramidWeight: _pyramidWeight, sgName: _sgName, sgRest: _sgRest, incline: _incline, ...passthrough } = e
+      const { warmupSets, intensifier, restSec, restOff: _restOff, warmupRestSec, warmupRestOff: _warmOff, sideRestSec: _sideRest, sideRestOff: _sideOff, subs: _subs, pyramid: _pyramid, pyramidRest: _pyramidRest, pyramidWeight: _pyramidWeight, sgName: _sgName, sgRest: _sgRest, incline: _incline, mediaPack: _mediaPack, ...passthrough } = e
       if (!known.has(passthrough.id)) passthrough.id = canonicalExId(passthrough.id)
-      return convertedExercise({ ...passthrough, ...(pyramid.length ? { pyramid } : {}), ...(pyramidRest.length ? { pyramidRest } : {}), ...(pyramidWeight.length ? { pyramidWeight } : {}), ...(warm ? { warmupSets: warm } : {}), ...(intens ? { intensifier: intens } : {}), ...(rest ? { restSec: rest } : restOff ? { restOff: true } : {}), ...(warmOff ? { warmupRestOff: true } : warmRest ? { warmupRestSec: warmRest } : {}), ...(sideOff ? { sideRestOff: true } : sideRest ? { sideRestSec: sideRest } : {}), ...(subs.length ? { subs } : {}), ...(sgName ? { sgName } : {}), ...(sgRest ? { sgRest } : {}), ...(incline > 0 ? { incline } : {}) }, sourceUnit || destination, destination)
+      const mediaPack = known.has(passthrough.id) ? '' : cleanTemplateMediaPack(_mediaPack, passthrough.id)
+      return convertedExercise({ ...passthrough, ...(pyramid.length ? { pyramid } : {}), ...(pyramidRest.length ? { pyramidRest } : {}), ...(pyramidWeight.length ? { pyramidWeight } : {}), ...(warm ? { warmupSets: warm } : {}), ...(intens ? { intensifier: intens } : {}), ...(rest ? { restSec: rest } : restOff ? { restOff: true } : {}), ...(warmOff ? { warmupRestOff: true } : warmRest ? { warmupRestSec: warmRest } : {}), ...(sideOff ? { sideRestOff: true } : sideRest ? { sideRestSec: sideRest } : {}), ...(subs.length ? { subs } : {}), ...(sgName ? { sgName } : {}), ...(sgRest ? { sgRest } : {}), ...(incline > 0 ? { incline } : {}), ...(mediaPack ? { mediaPack } : {}) }, sourceUnit || destination, destination)
     })
   }))
   return {

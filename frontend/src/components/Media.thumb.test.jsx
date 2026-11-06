@@ -42,4 +42,13 @@ describe('Thumb', () => {
     const { host } = mount(<Thumb ex={{ id: 'c' }} />)
     expect(host.querySelector('.thumb-x')).toBeTruthy()
   })
+
+  it('uses a starter-plan still only for that occurrence and falls back if it is absent', () => {
+    const ex = { id: '0025', img: '0025.webp' }
+    const { host } = mount(<Thumb ex={ex} mediaPack="tanchengyi" />)
+    const img = host.querySelector('img.thumb')
+    expect(img.getAttribute('src')).toBe('template-media/tanchengyi/0025.png')
+    act(() => { img.dispatchEvent(new Event('error')) })
+    expect(host.querySelector('img.thumb').getAttribute('src')).toMatch(/exercise-media\/still\/0025\.webp$/)
+  })
 })

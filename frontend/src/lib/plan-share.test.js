@@ -88,6 +88,15 @@ describe('what survives a shared plan', () => {
     expect(roundTrip({ warmupSets: 3 }).warmupSets).toBe(3)
   })
 
+  it('carries only a known template media pack for an exercise that belongs to it', () => {
+    expect(roundTrip({ mediaPack: 'tanchengyi' }).mediaPack).toBe('tanchengyi')
+    expect(roundTrip({ mediaPack: '../../private' }).mediaPack).toBeUndefined()
+    const wrongExercise = parsePlan({
+      opengym_plan: 1, routines: [{ id: 'r', ex: [{ id: '0001', sets: 1, reps: 1, mediaPack: 'tanchengyi' }] }],
+    }).routines[0].ex[0]
+    expect(wrongExercise.mediaPack).toBeUndefined()
+  })
+
   it('carries a non-default Epley deload factor and omits the default', () => {
     expect(roundTrip({ deloadFactor: 0.8 }).deloadFactor).toBe(0.8)
     expect('deloadFactor' in roundTrip({ deloadFactor: 0.9 })).toBe(false)

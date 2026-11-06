@@ -229,6 +229,8 @@ export default {
   'Full Body': '全身訓練',
   'Three sessions, the whole body each time.': '每週三次，每次皆訓練全身肌群。',
   '5×5': '5×5 力量訓練',
+  'Tan Chengyi 3-Split + Abs': '譚成義三分化＋腹部',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': '推、拉、腿和腹部四個訓練日，包含譚成義的動作提示和專屬圖片。',
   'Five sets of five on the main barbell lifts.': '主要槓鈴大重量複合動作，每組 5 下共 5 組。',
   'Build my own plan': '建立自己的計畫',
   '{0} week streak': '連續 {0} 週',

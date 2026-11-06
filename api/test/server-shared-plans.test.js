@@ -55,7 +55,7 @@ const bundle = {
   week: { 1: ['r1'], 3: ['r1'], 5: ['r1'] },
   routines: [{
     id: 'r1', name: 'Full body', emoji: 'dumbbell', privateProfileNote: 'drop me',
-    ex: [{ id: '0001', sets: 3, reps: 5, weight: 60, privateSetNote: 'drop me too' }]
+    ex: [{ id: '0025', sets: 3, reps: 5, weight: 60, mediaPack: 'tanchengyi', privateSetNote: 'drop me too' }]
   }],
   customEx: [],
   workouts: [{ id: 'secret-workout' }],
@@ -84,6 +84,7 @@ test('shared plans are opt-in, sanitized, forkable and admin-curated', async t =
   const detail = await h.call(BOB, '/api/shared-plan?id=' + id);
   assert.equal(detail.status, 200);
   assert.equal(detail.body.plan.bundle.routines[0].ex[0].weight, 60);
+  assert.equal(detail.body.plan.bundle.routines[0].ex[0].mediaPack, 'tanchengyi');
   assert.equal(JSON.stringify(detail.body).includes('secret-workout'), false);
   assert.equal(JSON.stringify(detail.body).includes('privateProfileNote'), false);
   assert.equal(JSON.stringify(detail.body).includes('privateSetNote'), false);

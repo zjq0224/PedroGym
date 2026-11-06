@@ -6,13 +6,30 @@ import { t, exerciseNameFor } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
 import CustomMedia, { CustomThumb } from './CustomMedia.jsx'
 import { useAnimSources } from './Animations.jsx'
+import { templateMediaSrc } from '../lib/template-media.js'
 
 // An exercise's picture, wherever one shows. A custom exercise goes to CustomMedia.jsx — its own
 // photo, GIF, video or link, from the local media store — and never through imgSrc/gifSrc, which
 // name files of the shipped dataset (a stray img/gif on a custom exercise, written by a fork, is
 // ignored). The split is by component, not by branch, so each side keeps its own hooks in order.
 export default function Media(p) {
-  return isCustomEx(p.ex) ? <CustomMedia {...p} /> : <BuiltinMedia {...p} />
+  if (isCustomEx(p.ex)) return <CustomMedia {...p} />
+  return templateMediaSrc(p.ex, p.mediaPack) ? <TemplateMedia {...p} /> : <BuiltinMedia {...p} />
+}
+
+// A branded starter plan's original still. It is deliberately a still rather than an animation:
+// these assets are a separate, consent-dependent pack, not edits of catalogue/media. If a build
+// omits the pack or one file fails, the ordinary licensed animation remains the safe fallback.
+function TemplateMedia({ ex, mediaPack, id, compact, minimizable }) {
+  const [failed, setFailed] = useState(false)
+  const gifSize = useStore(s => s.S.gifSize)
+  if (failed) return <BuiltinMedia ex={ex} id={id} compact={compact} minimizable={minimizable} />
+  if (minimizable && gifSize === 'off') return null
+  const mini = minimizable && gifSize === 'mini'
+  if (mini) return null
+  return <div className={'exmedia' + (compact ? ' compact' : '')} id={id}>
+    <img decoding="async" draggable={false} src={templateMediaSrc(ex, mediaPack)} alt={exerciseNameFor(ex)} onError={() => setFailed(true)} />
+  </div>
 }
 
 // Big autoplaying animation; tap toggles to the still frame. `compact` shrinks it (superset cards).
@@ -169,10 +186,13 @@ export function autoplayClip(el) {
 export function Thumb(p) {
   return isCustomEx(p.ex) ? <CustomThumb {...p} /> : <BuiltinThumb {...p} />
 }
-function BuiltinThumb({ ex }) {
+function BuiltinThumb({ ex, mediaPack }) {
   const body = useStore(s => figureOf(s.S))
-  const src = ex.img ? imgSrc(ex, body) : null
+  const own = templateMediaSrc(ex, mediaPack)
+  const src = own || (ex.img ? imgSrc(ex, body) : null)
   const [broken, setBroken] = useState(null)
+  // A missing optional pack image falls back to the catalogue still instead of a broken tile.
+  if (own && broken === own) return <BuiltinThumb ex={ex} />
   if (!src || broken === src) return <div className="thumb thumb-x"><Icon name="dumbbell" /></div>
   return <img className="thumb" loading="lazy" decoding="async" draggable={false} src={src} alt="" onError={() => setBroken(src)} />
 }

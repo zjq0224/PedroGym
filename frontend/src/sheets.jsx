@@ -178,7 +178,8 @@ const PLAN_COPY = {
   ppl: () => ({ name: t('Push / Pull / Legs'), about: t('Push, pull and legs each get their own day.') }),
   'upper-lower': () => ({ name: t('Upper / Lower'), about: t('Upper body twice, lower body twice.') }),
   'full-body': () => ({ name: t('Full Body'), about: t('Three sessions, the whole body each time.') }),
-  '5x5': () => ({ name: t('5×5'), about: t('Five sets of five on the main barbell lifts.') })
+  '5x5': () => ({ name: t('5×5'), about: t('Five sets of five on the main barbell lifts.') }),
+  tanchengyi: () => ({ name: t('Tan Chengyi 3-Split + Abs'), about: t('Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.') })
 }
 
 // Adds the plan's routines (reusing one you already have under the same name) and puts them on
@@ -2802,7 +2803,7 @@ function WorkoutDetail({ w, close }) {
   const entryRow = (e, i) => {
     const ex = EXIDX[e.id]
     return <div key={i} className="row wd-ex" style={{ alignItems: 'flex-start' }} {...tappable(() => exerciseHistorySheet(e.id))}>
-      {ex && <Thumb ex={ex} />}
+      {ex && <Thumb ex={ex} mediaPack={e.target?.mediaPack} />}
       <div className="grow"><div className={`tt ${exerciseNameClass(ex)}`} style={{ fontWeight: 600 }}>{nameOf(e)} {w.prs && w.prs.includes(e.id) && <span className="pr"><Icon name="trophy" />PR</span>}</div>
         <div className="ss">{e.sets.filter(hasCompletedWork).map(s => setLabel(e.id, s, e.target, speedUnitOf(st)) + hrLabel(s)).join('  ·  ') || t('no sets')}</div>
         {e.note && <div className="small dim" style={{ marginTop: 3 }}>

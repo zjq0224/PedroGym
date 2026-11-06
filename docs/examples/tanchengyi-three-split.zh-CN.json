@@ -1,0 +1,195 @@
+{
+  "opengym_plan": 1,
+  "exported": "2026-11-06",
+  "name": "凯圣王 × 谭成义 2026 三分化＋腹部",
+  "unit": "kg",
+  "week": {},
+  "routines": [
+    {
+      "id": "tanchengyi-push",
+      "name": "谭成义三分化 · 推日",
+      "emoji": "🏋️",
+      "ex": [
+        {
+          "id": "0025",
+          "sets": 4,
+          "reps": 15,
+          "pyramid": [15, 12, 10, 8],
+          "warmupSets": 3,
+          "note": "RPE 8，保留约2次余力。按周期手动调整次数与重量。"
+        },
+        {
+          "id": "0314",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "dbLoad": "each",
+          "note": "先保持动作稳定，再逐步提高末组强度。"
+        },
+        {
+          "id": "0251",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "lastToFailure": true,
+          "note": "动作变形前停止；不足12次时记录实际完成次数。"
+        },
+        {
+          "id": "0061",
+          "sets": 4,
+          "reps": 15,
+          "prog": "off",
+          "note": "保持肩屈位与肘部稳定，重点训练肱三头肌长头。"
+        },
+        {
+          "id": "5818",
+          "sets": 3,
+          "reps": 20,
+          "prog": "off",
+          "lastToFailure": true,
+          "note": "每组先做10次，短休约5秒，再做10次或至技术力竭。"
+        }
+      ]
+    },
+    {
+      "id": "tanchengyi-pull",
+      "name": "谭成义三分化 · 拉日",
+      "emoji": "🔙",
+      "ex": [
+        {
+          "id": "1204",
+          "sets": 4,
+          "reps": 24,
+          "side": true,
+          "prog": "off",
+          "lastToFailure": true,
+          "note": "每侧12次。末组可在技术稳定时做短休追加。"
+        },
+        {
+          "id": "7583",
+          "sets": 4,
+          "reps": 10,
+          "repsMin": 8,
+          "prog": "double",
+          "inc": 2.5,
+          "note": "RPE 8，不力竭；完成4×12后增加重量并回到8次。"
+        },
+        {
+          "id": "1235",
+          "sets": 4,
+          "reps": 20,
+          "side": true,
+          "prog": "off",
+          "lastToFailure": true,
+          "note": "每侧10次，胸部保持支撑；末组可做技术力竭。"
+        },
+        {
+          "id": "0218",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "note": "开肘拉向下胸，主动完成肩胛骨后缩。"
+        },
+        {
+          "id": "1636",
+          "sets": 3,
+          "reps": 12,
+          "prog": "off",
+          "note": "保持上臂抬高和固定，专注肱二头肌收缩。"
+        }
+      ]
+    },
+    {
+      "id": "tanchengyi-legs",
+      "name": "谭成义三分化 · 腿日",
+      "emoji": "🦵",
+      "ex": [
+        {
+          "id": "1757",
+          "sets": 4,
+          "reps": 20,
+          "side": true,
+          "prog": "off",
+          "dbLoad": "each",
+          "note": "每侧10次，先建立单腿稳定与髋铰链控制。"
+        },
+        {
+          "id": "2290",
+          "sets": 4,
+          "reps": 20,
+          "side": true,
+          "prog": "off",
+          "dbLoad": "each",
+          "note": "每侧10次，后脚只作支撑，前腿主动发力。"
+        },
+        {
+          "id": "0042",
+          "sets": 4,
+          "reps": 10,
+          "prog": "linear",
+          "inc": 2.5,
+          "warmupSets": 3,
+          "note": "RPE 8，不力竭；保持躯干直立和核心稳定。"
+        },
+        {
+          "id": "0085",
+          "sets": 4,
+          "reps": 10,
+          "prog": "linear",
+          "inc": 2.5,
+          "warmupSets": 3,
+          "note": "RPE 8；杠铃贴身，以髋铰链完成动作。"
+        },
+        {
+          "id": "0489",
+          "sets": 4,
+          "reps": 15,
+          "prog": "off",
+          "note": "全程控制，不借惯性甩动；身体回到直线即可。"
+        }
+      ]
+    },
+    {
+      "id": "tanchengyi-abs",
+      "name": "谭成义 · 腹部训练",
+      "emoji": "🎯",
+      "ex": [
+        {
+          "id": "ctcy-reverse-roman-chair-crunch",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "note": "骨盆和下背贴稳斜垫，先后仰拉长腹肌，再让胸廓向骨盆卷起；不要做成髋部折叠的完整仰卧起坐。"
+        },
+        {
+          "id": "0472",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "note": "避免摆动，抬腿末端继续轻微卷起骨盆；握力先疲劳时可使用助力带。"
+        },
+        {
+          "id": "0175",
+          "sets": 4,
+          "reps": 12,
+          "prog": "off",
+          "note": "髋部位置保持稳定，让胸廓向骨盆卷曲；用腹肌完成，不要只做髋部后坐。"
+        }
+      ]
+    }
+  ],
+  "customEx": [
+    {
+      "id": "ctcy-reverse-roman-chair-crunch",
+      "n": "反向山羊挺身卷腹",
+      "bp": "waist",
+      "eq": "body weight",
+      "desc": "使用现代倾斜式罗马椅固定下肢和骨盆，在可控后仰后主动将胸廓卷向骨盆，重点训练腹直肌。参考内置动作 3329，但使用自定义动作以便上传更准确的示范图。",
+      "tg": "abs",
+      "primaries": ["abs"],
+      "secondaries": ["obliques", "hip flexors"],
+      "muscleGroups": ["abs", "obliques", "hip flexors"],
+      "url": "https://www.youtube.com/watch?v=jkY6id0i9z0"
+    }
+  ]
+}

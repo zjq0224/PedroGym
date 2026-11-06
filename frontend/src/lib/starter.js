@@ -34,17 +34,57 @@ const FIVE_BY_FIVE = [
   ['5x5-c', '5×5 C', 'barbell', [['0739', 5, 5], ['0047', 5, 5], ['1323', 5, 5]]]
 ]
 
+// 凯圣王 × 谭成义 2026 三分化，以及谭成义公开的腹部训练。Unlike the generic starter
+// plans, every occurrence carries `mediaPack`: the catalogue exercise and its history stay the
+// same, while the routine/workout views may show the separate coach-likeness pack.
+const TANCHENGYI = [
+  ['tcy-push', '谭成义 · 推日', 'barbell', [
+    ['0025', 4, 15, { pyramid: [15, 12, 10, 8], warmupSets: 3, note: 'RPE 8，保留约 2 次余力；按周期逐步压低次数并提高重量。' }],
+    ['0314', 4, 12, { dbLoad: 'each', prog: 'off', note: '上斜凳约 30°，先保持肩胛稳定，再逐步提高末组强度。' }],
+    ['0251', 4, 12, { prog: 'off', lastToFailure: true, note: '身体略前倾，动作变形前停止；不足 12 次时记录实际次数。' }],
+    ['0061', 4, 15, { prog: 'off', note: '保持肩屈位与肘部稳定，重点训练肱三头肌长头。' }],
+    ['5818', 3, 20, { prog: 'off', lastToFailure: true, note: '沿肩胛面举成 Y 字；10 次后短休约 5 秒，再做 10 次或至技术力竭。' }],
+  ]],
+  ['tcy-pull', '谭成义 · 拉日', 'pullup', [
+    ['1204', 4, 24, { side: true, prog: 'off', lastToFailure: true, note: '每侧 12 次，保持躯干稳定，末组可在技术稳定时短休追加。' }],
+    ['7583', 4, 10, { repsMin: 8, prog: 'double', inc: 2.5, note: 'RPE 8；完成 4×12 后增加重量并回到 8 次。' }],
+    ['1235', 4, 20, { side: true, prog: 'off', lastToFailure: true, note: '每侧 10 次，胸部保持支撑，避免躯干旋转。' }],
+    ['0218', 4, 12, { prog: 'off', note: '开肘拉向下胸，主动完成肩胛后缩。' }],
+    ['1636', 3, 12, { prog: 'off', note: '保持上臂抬高和固定，专注肱二头肌收缩。' }],
+  ]],
+  ['tcy-legs', '谭成义 · 腿日', 'legs', [
+    ['1757', 4, 20, { side: true, dbLoad: 'each', prog: 'off', note: '每侧 10 次，先建立单腿稳定与髋铰链控制。' }],
+    ['2290', 4, 20, { side: true, dbLoad: 'each', prog: 'off', note: '每侧 10 次，后脚只作支撑，前腿主动发力。' }],
+    ['0042', 4, 10, { prog: 'linear', inc: 2.5, warmupSets: 3, note: 'RPE 8，不力竭；保持躯干直立和核心稳定。' }],
+    ['0085', 4, 10, { prog: 'linear', inc: 2.5, warmupSets: 3, note: 'RPE 8；杠铃贴身，以髋铰链完成动作。' }],
+    ['0489', 4, 15, { prog: 'off', note: '全程控制，不借惯性甩动；身体回到直线即可。' }],
+  ]],
+  ['tcy-abs', '谭成义 · 腹部训练', 'figureStrength', [
+    ['3329', 4, 12, { prog: 'off', note: '骨盆和下背贴稳斜垫，先后仰拉长腹肌，再让胸廓向骨盆卷起。' }],
+    ['0472', 4, 12, { prog: 'off', note: '避免摆动，抬腿末端继续轻微卷起骨盆。' }],
+    ['0175', 4, 12, { prog: 'off', note: '髋部保持稳定，让胸廓向骨盆卷曲，不要只做髋部后坐。' }],
+  ]],
+]
+
 // [weekday, routineKey] — weekday is a DAYN index, so 1 is Monday. Fixed weeks only: every
 // plan repeats the same seven days, which is all the weekly plan model can represent.
 const PLANS = {
   ppl: { routines: PPL, schedule: [[1, 'push'], [3, 'pull'], [5, 'legs']] },
   'upper-lower': { routines: UPPER_LOWER, schedule: [[1, 'upper-a'], [2, 'lower-a'], [4, 'upper-b'], [5, 'lower-b']] },
   'full-body': { routines: FULL_BODY, schedule: [[1, 'fb-a'], [3, 'fb-b'], [5, 'fb-c']] },
-  '5x5': { routines: FIVE_BY_FIVE, schedule: [[1, '5x5-a'], [3, '5x5-b'], [5, '5x5-c']] }
+  '5x5': { routines: FIVE_BY_FIVE, schedule: [[1, '5x5-a'], [3, '5x5-b'], [5, '5x5-c']] },
+  tanchengyi: {
+    routines: TANCHENGYI,
+    schedule: [[1, 'tcy-push'], [2, 'tcy-pull'], [3, 'tcy-legs'], [5, 'tcy-abs']],
+    mediaPack: 'tanchengyi',
+  },
 }
 
-const build = routines =>
-  routines.map(([, name, emoji, list]) => ({ id: uid(), name, emoji, ex: list.map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 })) }))
+const build = (routines, mediaPack) =>
+  routines.map(([, name, emoji, list]) => ({
+    id: uid(), name, emoji,
+    ex: list.map(([id, sets, reps, config]) => ({ id, sets, reps, weight: 0, ...(config || {}), ...(mediaPack ? { mediaPack } : {}) })),
+  }))
 
 // Fresh routine objects (new ids) — [push, pull, legs]. The demo build seeds a history on
 // top of exactly these three, so this entry point keeps its shape.
@@ -104,14 +144,14 @@ const fitRoutines = (routines, equipment) => {
   const fitted = routines.map(([key, name, emoji, list]) => {
     const taken = new Set(list.map(([id]) => id))
     const out = []
-    for (const [id, sets, reps] of list) {
+    for (const [id, sets, reps, config] of list) {
       const ex = EXIDX[id]
-      if (!ex || eqAvailable(equipment, ex)) { out.push([id, sets, reps]); continue }
+      if (!ex || eqAvailable(equipment, ex)) { out.push([id, sets, reps, config]); continue }
       const sub = substituteFor(ex, equipment, taken)
       if (!sub) { dropped++; continue }
       taken.add(sub.id)
       swapped++
-      out.push([sub.id, sets, reps])
+      out.push([sub.id, sets, reps, config])
     }
     return [key, name, emoji, out]
   }).filter(([, , , list]) => list.length)
@@ -126,7 +166,7 @@ export const buildStarterPlan = (id, equipment) => {
   if (!plan) return null
   const fit = equipment ? fitRoutines(plan.routines, equipment) : null
   const source = fit ? fit.routines : plan.routines
-  const routines = build(source)
+  const routines = build(source, plan.mediaPack)
   // key → the id just minted for it, so the schedule below names its routine
   const byKey = Object.fromEntries(source.map(([key], i) => [key, routines[i].id]))
   return {

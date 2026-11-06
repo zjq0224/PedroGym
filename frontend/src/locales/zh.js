@@ -233,6 +233,8 @@ export default {
   'Full Body': '全身',
   'Three sessions, the whole body each time.': '三次训练，每次练全身。',
   '5×5': '5×5',
+  'Tan Chengyi 3-Split + Abs': '谭成义三分化＋腹部',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': '推、拉、腿和腹部四个训练日，包含谭成义的动作提示和专属图片。',
   'Five sets of five on the main barbell lifts.': '主要杠铃动作五组五次。',
   'Build my own plan': '创建自己的计划',
   '{0} week streak': '连续 {0} 周',
