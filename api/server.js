@@ -37,6 +37,7 @@ import { effectiveRoutineId } from './queue.js';
 import { stampPut } from './sync-stamps.js';
 import { atomicWrite as durableWrite } from './durable.js';
 import { excusedOn, nudgeFor, nudgeWindowOpen, toneOf } from './nudge.js';
+import { BUILTIN_SHARED_PLANS } from './shared-plan-templates.js';
 
 const PORT = +(process.env.PORT || 3000);
 const DATA = process.env.DATA_DIR || '/data';
@@ -328,10 +329,17 @@ function cleanSharedBundle(raw) {
 }
 
 const sharedPlanOwner = p => db.users.find(u => u.id === p.ownerId && !u.disabled) || null;
+const planStats = bundle => {
+  const routines = records(bundle?.routines);
+  return {
+    routineCount: routines.length,
+    exerciseCount: routines.reduce((n, r) => n + records(r.ex).length, 0),
+    scheduledDays: Object.values(record(bundle?.week) ? bundle.week : {}).filter(v => Array.isArray(v) ? v.length : !!v).length,
+  };
+};
 function sharedPlanCard(p, includeBundle = false) {
   const owner = sharedPlanOwner(p);
   if (!owner) return null;
-  const routines = records(p.bundle?.routines);
   return {
     id: p.id,
     title: p.title,
@@ -340,15 +348,25 @@ function sharedPlanCard(p, includeBundle = false) {
     template: p.template === true,
     created: p.created,
     updated: p.updated || p.created,
-    routineCount: routines.length,
-    exerciseCount: routines.reduce((n, r) => n + records(r.ex).length, 0),
-    scheduledDays: Object.values(record(p.bundle?.week) ? p.bundle.week : {}).filter(v => Array.isArray(v) ? v.length : !!v).length,
+    ...planStats(p.bundle),
+    ...(includeBundle ? { bundle: p.bundle } : {}),
+  };
+}
+
+function builtinSharedPlanCard(p, includeBundle = false) {
+  return {
+    id: p.id, title: p.title, summary: p.summary || '', owner: p.owner,
+    template: true, builtin: true, created: p.created, updated: p.updated,
+    ...planStats(p.bundle),
     ...(includeBundle ? { bundle: p.bundle } : {}),
   };
 }
 
 function visibleSharedPlans() {
-  return db.sharedPlans.map(p => sharedPlanCard(p)).filter(Boolean).sort((a, b) =>
+  return [
+    ...BUILTIN_SHARED_PLANS.map(p => builtinSharedPlanCard(p)),
+    ...db.sharedPlans.map(p => sharedPlanCard(p)).filter(Boolean),
+  ].sort((a, b) =>
     Number(b.template) - Number(a.template)
       || a.owner.name.localeCompare(b.owner.name)
       || (b.updated || '').localeCompare(a.updated || ''));
@@ -2887,6 +2905,8 @@ const routes = {
     const user = readSession(req);
     if (!user) return json(res, 401, { error: 'not signed in' });
     const id = new URL(req.url, 'http://x').searchParams.get('id') || '';
+    const builtin = BUILTIN_SHARED_PLANS.find(p => p.id === id);
+    if (builtin) return json(res, 200, { plan: builtinSharedPlanCard(builtin, true) });
     const found = db.sharedPlans.find(p => p.id === id);
     const plan = found && sharedPlanCard(found, true);
     if (!plan) return json(res, 404, { error: 'no such shared plan' });

@@ -216,6 +216,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'ตั้งค่ารูทีนรายสัปดาห์เพื่อเริ่มต้น หรือหยิบแผนเริ่มต้นสำเร็จรูปไปใช้ก็ได้',
   'Load starter plan': 'โหลดแผนเริ่มต้น',
   'Choose starter plan': 'เลือกแผนเริ่มต้น',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3-Split + หน้าท้อง',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'วันผลัก ดึง ขา และหน้าท้อง พร้อมคำแนะนำและภาพจาก Tan Chengyi',
   'Fit to my equipment': 'ปรับให้เข้ากับอุปกรณ์ของฉัน',
   'As written': 'ตามเดิม',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'เพิ่มโปรไฟล์อุปกรณ์ในการตั้งค่า เพื่อปรับแผนให้เข้ากับสิ่งที่คุณมี',

@@ -222,6 +222,8 @@ export default {
   'No routines yet.': 'Програм поки немає.',
   'Make one, or grab the starter plan to get going.': 'Створи програму або візьми стартовий план, щоб почати.',
   'Choose starter plan': 'Вибери стартовий план',
+  'Tan Chengyi 3-Split + Abs': 'Триденний спліт + прес Тань Ченьї',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Жим, тяга, ноги та прес з підказками й зображеннями Тань Ченьї.',
   'Fit to my equipment': 'Підібрати під моє обладнання',
   'As written': 'Як є',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Додай профіль обладнання в налаштуваннях, щоб підібрати план під те, що в тебе є.',

@@ -217,6 +217,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Başlamak için haftalık rutinini kur ya da hazır bir başlangıç planı kap.',
   'Load starter plan': 'Başlangıç planı yükle',
   'Choose starter plan': 'Başlangıç planı seç',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3 Günlük Split + Karın',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Tan Chengyi’nin ipuçları ve görselleriyle itme, çekme, bacak ve karın günleri.',
   'Fit to my equipment': 'Ekipmanıma uyarla',
   'As written': 'Olduğu gibi',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Bir planı sahip olduklarına uyarlamak için Ayarlar\'da bir ekipman profili ekle.',

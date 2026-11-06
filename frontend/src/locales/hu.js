@@ -216,6 +216,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Állítsd be a heti rutinodat az induláshoz, vagy kapj elő egy kész kezdő tervet.',
   'Load starter plan': 'Kezdő terv betöltése',
   'Choose starter plan': 'Válassz kezdő tervet',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3 napos bontás + has',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Nyomó, húzó, láb- és hasnap Tan Chengyi útmutatásaival és képeivel.',
   'Fit to my equipment': 'Igazítás a felszerelésemhez',
   'As written': 'Eredeti',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Adj hozzá felszerelésprofilt a Beállításokban, hogy a tervet ahhoz igazítsd, amid van.',

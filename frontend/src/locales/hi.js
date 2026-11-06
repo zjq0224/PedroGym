@@ -217,6 +217,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'शुरू करने के लिए अपना साप्ताहिक रूटीन बनाएँ, या बना-बनाया स्टार्टर प्लान ले लें।',
   'Load starter plan': 'स्टार्टर प्लान लोड करें',
   'Choose starter plan': 'स्टार्टर प्लान चुनें',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3-Split + Abs',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Tan Chengyi के संकेतों और तस्वीरों के साथ पुश, पुल, पैर और एब्स।',
   'Fit to my equipment': 'मेरे उपकरणों के अनुसार ढालें',
   'As written': 'जैसा है वैसा',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'अपने पास मौजूद उपकरणों के अनुसार प्लान ढालने के लिए सेटिंग्स में उपकरण प्रोफ़ाइल जोड़ें।',

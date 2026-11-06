@@ -248,6 +248,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'শুরু করতে আপনার সাপ্তাহিক রুটিন সেট আপ করুন, অথবা একটি তৈরি স্টার্টার প্ল্যান নিন।',
   'Load starter plan': 'স্টার্টার প্ল্যান লোড করুন',
   'Choose starter plan': 'স্টার্টার প্ল্যান বেছে নিন',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3-Split + Abs',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Tan Chengyi-র নির্দেশনা ও ছবিসহ পুশ, পুল, পা ও পেটের চারটি দিন।',
   'Fit to my equipment': 'আমার সরঞ্জাম অনুযায়ী সাজান',
   'As written': 'যেমন লেখা আছে',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'আপনার কাছে যা আছে সেই অনুযায়ী প্ল্যান সাজাতে সেটিংসে একটি সরঞ্জাম প্রোফাইল যোগ করুন।',

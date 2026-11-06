@@ -103,6 +103,8 @@ export const PT_BR_OVERRIDES = {
   'Freestyle workout. Add your first exercise and off you go.': 'Treino livre. Adicione seu primeiro exercício e bora.',
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Configure sua rotina semanal para começar, ou pegue um plano inicial já pronto.',
   'Choose starter plan': 'Escolha um plano inicial',
+  'Tan Chengyi 3-Split + Abs': 'Divisão de 3 dias + abdômen de Tan Chengyi',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Empurrar, puxar, pernas e abdômen com dicas e imagens de Tan Chengyi.',
   'Fit to my equipment': 'Adaptar ao meu equipamento',
   'As written': 'Do jeito que está',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Adicione um perfil de equipamento em Ajustes para adaptar um plano ao que você tem.',

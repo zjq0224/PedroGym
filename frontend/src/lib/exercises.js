@@ -3,6 +3,7 @@ import MUSCLE_MAP from './exercise-muscle-map.json' with { type: 'json' }
 import V13_IDS from './catalogue-v13-ids.json' with { type: 'json' }
 import { t, getVersion, exerciseNameSearchText } from './i18n-core.js'
 import { exerciseAliases, aliasSnapshot } from './exercise-aliases.js'
+import { exerciseCollectionTerms } from './exercise-collections.js'
 
 export { EXDB }
 
@@ -333,7 +334,7 @@ function corpusOf(e) {
   const sm = Array.isArray(e?.sm) ? e.sm : []
   const name = normalizeStr(exerciseNameSearchText(e))
   const s = normalizeStr([
-    name, ...exerciseAliases(e),
+    name, ...exerciseAliases(e), ...exerciseCollectionTerms(e?.id),
     e?.tg || '', t(e?.tg || ''),
     e?.eq || '', t(e?.eq || ''),
     e?.bp || '', t(e?.bp || ''),

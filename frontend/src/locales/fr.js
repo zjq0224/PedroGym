@@ -217,6 +217,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Configure ta routine hebdo pour te lancer, ou prends un plan de départ tout prêt.',
   'Load starter plan': 'Charger un plan de départ',
   'Choose starter plan': 'Choisis un plan de départ',
+  'Tan Chengyi 3-Split + Abs': 'Programme 3 jours + abdos de Tan Chengyi',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Poussée, tirage, jambes et abdos avec les consignes et images de Tan Chengyi.',
   'Fit to my equipment': 'Adapter à mon matériel',
   'As written': 'Tel quel',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Ajoute un profil de matériel dans les Réglages pour adapter un plan à ce que tu possèdes.',

@@ -226,6 +226,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Lägg upp din veckorutin för att komma igång, eller välj en färdig startplan.',
   'Load starter plan': 'Ladda startplan',
   'Choose starter plan': 'Välj startplan',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3-split + mage',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Press, drag, ben och mage med Tan Chengyis instruktioner och bilder.',
   'Fit to my equipment': 'Anpassa till min utrustning',
   'As written': 'Som den är skriven',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Lägg till en utrustningsprofil i Inställningar för att anpassa en plan efter det du har.',

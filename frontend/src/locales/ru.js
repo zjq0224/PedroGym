@@ -211,6 +211,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': 'Настройте свой недельный план, чтобы начать, или возьмите готовый стартовый план.',
   'Load starter plan': 'Загрузить стартовый план',
   'Choose starter plan': 'Выберите стартовый план',
+  'Tan Chengyi 3-Split + Abs': 'Трёхдневный сплит + пресс Тань Чэнъи',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Жим, тяга, ноги и пресс с подсказками и изображениями Тань Чэнъи.',
   'Fit to my equipment': 'Подогнать под моё оборудование',
   'As written': 'Как есть',
   'Add an equipment profile in Settings to fit a plan to what you own.': 'Добавьте профиль оборудования в настройках, чтобы подогнать план под то, что у вас есть.',

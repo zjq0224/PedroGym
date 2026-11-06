@@ -61,7 +61,7 @@ function SharedPlanDetail({ id }) {
 
   const bundle = plan.bundle || { routines: [], week: {}, customEx: [] }
   const ownPlan = plan.owner.id === user?.id
-  const canEdit = ownPlan || user?.admin
+  const canEdit = !plan.builtin && (ownPlan || user?.admin)
   const custom = new Map((bundle.customEx || []).map(e => [e.id, e]))
   const exercise = id => EXIDX[id] || custom.get(id) || { id, n: id }
   const names = new Map((bundle.routines || []).map(r => [r.id, r.name]))

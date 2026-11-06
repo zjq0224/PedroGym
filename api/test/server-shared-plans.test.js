@@ -79,7 +79,17 @@ test('shared plans are opt-in, sanitized, forkable and admin-curated', async t =
 
   const list = await h.call(BOB, '/api/shared-plans');
   assert.equal(list.status, 200);
-  assert.deepEqual(list.body.plans.map(p => p.id), [id]);
+  assert.deepEqual(list.body.plans.map(p => p.id), ['template-tanchengyi-three-split-2026', id]);
+  const template = list.body.plans[0];
+  assert.equal(template.template, true);
+  assert.equal(template.builtin, true);
+  assert.equal(template.routineCount, 4);
+  assert.equal(template.exerciseCount, 18);
+
+  const templateDetail = await h.call(BOB, '/api/shared-plan?id=template-tanchengyi-three-split-2026');
+  assert.equal(templateDetail.status, 200);
+  assert.equal(templateDetail.body.plan.bundle.routines[3].name, '谭成义 · 腹部训练');
+  assert.equal(templateDetail.body.plan.bundle.routines.flatMap(r => r.ex).every(e => e.mediaPack === 'tanchengyi'), true);
 
   const detail = await h.call(BOB, '/api/shared-plan?id=' + id);
   assert.equal(detail.status, 200);
@@ -103,7 +113,7 @@ test('shared plans are opt-in, sanitized, forkable and admin-curated', async t =
   // Removing the account removes what it published as part of the same durable db write.
   const removed = await h.call(ADMIN, '/api/admin/user/delete', { id: ALICE });
   assert.equal(removed.status, 200, JSON.stringify(removed.body));
-  assert.deepEqual((await h.call(BOB, '/api/shared-plans')).body.plans, []);
+  assert.deepEqual((await h.call(BOB, '/api/shared-plans')).body.plans.map(p => p.id), ['template-tanchengyi-three-split-2026']);
   const saved = JSON.parse(fs.readFileSync(path.join(h.dataDir, 'db.json'), 'utf8'));
   assert.deepEqual(saved.sharedPlans, []);
 });

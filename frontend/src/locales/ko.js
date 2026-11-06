@@ -217,6 +217,8 @@ export default {
   'Set up your weekly routine to get going, or grab a ready-made starter plan.': '주간 루틴을 설정해 시작하거나, 미리 만들어진 스타터 계획을 가져오세요.',
   'Load starter plan': '스타터 계획 불러오기',
   'Choose starter plan': '스타터 계획 선택',
+  'Tan Chengyi 3-Split + Abs': 'Tan Chengyi 3분할 + 복근',
+  'Push, pull, legs and abs with Tan Chengyi’s exercise cues and images.': 'Tan Chengyi의 운동 팁과 이미지가 포함된 푸시, 풀, 하체, 복근 루틴입니다.',
   'Fit to my equipment': '내 장비에 맞추기',
   'As written': '그대로',
   'Add an equipment profile in Settings to fit a plan to what you own.': '보유한 장비에 맞게 계획을 조정하려면 설정에서 장비 프로필을 추가하세요.',
