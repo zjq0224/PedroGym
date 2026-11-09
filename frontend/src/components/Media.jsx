@@ -4,7 +4,8 @@ import { MOBILE } from '../lib/mobile.js'
 import { useStore } from '../store/useStore.js'
 import { t, exerciseNameFor } from '../lib/i18n.js'
 import Icon from './Icon.jsx'
-import CustomMedia, { CustomThumb } from './CustomMedia.jsx'
+import CustomMedia, { CustomThumb, LinkCard } from './CustomMedia.jsx'
+import { youtubeId, youtubeLinks } from '../lib/youtube.js'
 import { useAnimSources } from './Animations.jsx'
 import { templateMediaSrc } from '../lib/template-media.js'
 
@@ -13,8 +14,13 @@ import { templateMediaSrc } from '../lib/template-media.js'
 // name files of the shipped dataset (a stray img/gif on a custom exercise, written by a fork, is
 // ignored). The split is by component, not by branch, so each side keeps its own hooks in order.
 export default function Media(p) {
-  if (isCustomEx(p.ex)) return <CustomMedia {...p} />
-  return templateMediaSrc(p.ex, p.mediaPack) ? <TemplateMedia {...p} /> : <BuiltinMedia {...p} />
+  const size = useStore(s => s.S.gifSize)
+  const custom = isCustomEx(p.ex)
+  const links = youtubeLinks(p.notes).filter(url => !custom || youtubeId(url) !== youtubeId(p.ex?.url))
+  return <>
+    {custom ? <CustomMedia {...p} /> : templateMediaSrc(p.ex, p.mediaPack) ? <TemplateMedia {...p} /> : <BuiltinMedia {...p} />}
+    {(!p.minimizable || size !== 'off') && links.map(url => <LinkCard key={url} url={url} compact={p.compact} mini={p.minimizable && size === 'mini'} />)}
+  </>
 }
 
 // A curated original still. It is deliberately a still rather than an animation: these assets
