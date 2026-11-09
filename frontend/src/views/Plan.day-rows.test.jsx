@@ -13,10 +13,10 @@ import { dayAssignSheet, menuSheet } from '../sheets.jsx'
 globalThis.IS_REACT_ACT_ENVIRONMENT = true
 
 const mocks = vi.hoisted(() => {
-  const state = { S: null, coach: false, nav: null }
+  const state = { S: null, user: null, coach: false, nav: null }
   state.snapshot = () => ({
     S: state.S,
-    user: null,
+    user: state.user,
     update: mut => {
       const next = structuredClone(state.S)
       mut(next)
@@ -43,6 +43,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   localStorage.removeItem('gym_plan_view')
   mocks.coach = false
+  mocks.user = { id: 'u1', name: 'Alice' }
   mocks.nav = vi.fn()
   mocks.S = {
     unit: 'kg', workouts: [], exWeights: {}, week: { 1: ['r1'] }, dayPlan: {},
@@ -109,10 +110,11 @@ describe('Plan — the menu', () => {
     expect(openMenu().items.filter(Boolean).map(i => i.label)).not.toContain('Coach')
   })
 
-  it('greys out share and print while there is nothing to share, and says why', () => {
+  it('opens server sharing to explain an empty plan, while file share and print stay disabled', () => {
     mount()
     const menu = openMenu()
     const item = label => menu.items.find(i => i && i.label === label)
+    expect(item('Share with this server').disabled).toBeFalsy()
     expect(item('Export plan file').disabled).toBe(true)
     expect(item('Print / Save as PDF').disabled).toBe(true)
     expect(item('Import a plan file').disabled).toBeFalsy()

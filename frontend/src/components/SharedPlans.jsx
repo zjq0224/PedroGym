@@ -96,10 +96,11 @@ export function openSharePlanSheet() {
   useUI.getState().openSheet(close => <SharePlanSheet close={close} />)
 }
 
-function SharePlanSheet({ close }) {
+export function SharePlanSheet({ close }) {
   const S = useStore(s => s.S)
   const user = useStore(s => s.user)
   const toast = useUI(s => s.toast)
+  const hasPlan = (S.routines || []).some(r => Array.isArray(r.ex) && r.ex.length)
   const initial = S.routines.length === 1 ? S.routines[0].name : t('My training plan')
   const [title, setTitle] = useState(initial)
   const [summary, setSummary] = useState('')
@@ -107,7 +108,7 @@ function SharePlanSheet({ close }) {
 
   const share = async () => {
     const name = title.trim()
-    if (!name || busy || !user) return
+    if (!name || busy || !user || !hasPlan) return
     setBusy(true)
     try {
       const bundle = buildPlanBundle(S, name)
@@ -128,6 +129,7 @@ function SharePlanSheet({ close }) {
     <TextField value={title} maxLength={60} autoFocus onChange={e => setTitle(e.target.value)} />
     <label className="field-label">{t('Description (optional)')}</label>
     <TextArea rows={4} value={summary} maxLength={1000} onChange={e => setSummary(e.target.value)} />
-    <Button variant="primary" icon="share" disabled={!title.trim() || busy} onClick={share}>{busy ? t('Loading…') : t('Share plan')}</Button>
+    {!hasPlan && <div className="muted small">{t('Add an exercise to a routine first. An empty plan has nothing to share.')}</div>}
+    <Button variant="primary" icon="share" disabled={!hasPlan || !title.trim() || busy} onClick={share}>{busy ? t('Loading…') : t('Share plan')}</Button>
   </>
 }

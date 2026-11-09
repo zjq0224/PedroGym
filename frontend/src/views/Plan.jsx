@@ -160,7 +160,7 @@ export default function Plan() {
       title: t('Plan'),
       subtitle: has ? null : t('Add an exercise to a routine first. An empty plan has nothing to share.'),
       items: [
-        user && { icon: 'globe', label: t('Share with this server'), sub: t('Let other profiles here browse and fork a snapshot of your plan.'), disabled: !has, onClick: openSharePlanSheet },
+        user && { icon: 'globe', label: t('Share with this server'), sub: t('Let other profiles here browse and fork a snapshot of your plan.'), onClick: openSharePlanSheet },
         user && { icon: 'grid', label: t('Browse shared plans'), sub: t('Templates and plans shared by people on this server'), onClick: () => nav('/plans') },
         { icon: 'share', label: t('Export plan file'), sub: t('A small file a friend can import into their own openGym. Routines only, none of your workouts or weigh-ins.'), disabled: !has, onClick: exportPlanFile },
         { icon: 'note', label: t('Print / Save as PDF'), disabled: !has, onClick: printWholePlan },

@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client'
 import { useStore } from '../store/useStore.js'
 import { api } from '../lib/api.js'
 import { setLang } from '../lib/i18n.js'
-import { SharedPlansGallery, groupSharedPlans } from './SharedPlans.jsx'
+import { SharePlanSheet, SharedPlansGallery, groupSharedPlans } from './SharedPlans.jsx'
 
 const nav = vi.fn()
 vi.mock('react-router-dom', () => ({ useNavigate: () => nav }))
@@ -55,5 +55,20 @@ describe('shared plan gallery', () => {
     api.mockResolvedValue({ plans: [] })
     await act(async () => { root.render(<SharedPlansGallery compact />); await Promise.resolve() })
     expect(host.textContent).toContain('Nobody has shared a plan yet.')
+  })
+})
+
+describe('share plan sheet', () => {
+  it('opens for an empty plan, explains what is missing, and does not submit it', () => {
+    useStore.setState({
+      S: { routines: [{ id: 'r1', name: 'Push', ex: [] }] },
+      user: { id: 'me', name: 'Me' },
+    })
+    act(() => root.render(<SharePlanSheet close={vi.fn()} />))
+
+    expect(host.textContent).toContain('Add an exercise to a routine first')
+    const share = [...host.querySelectorAll('button')].find(b => b.textContent === 'Share plan')
+    expect(share.disabled).toBe(true)
+    expect(api).not.toHaveBeenCalled()
   })
 })
